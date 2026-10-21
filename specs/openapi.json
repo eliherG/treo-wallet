@@ -1,0 +1,1545 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Treo Wallet API",
+    "version": "0.1.0",
+    "description": "Contrato propuesto para el MVP local. Reglas definitivas en specs/requirements.md v0.3 aprobado; diseño aprobado. Importe de entrada como cadena decimal; dinero de salida como cadenas de centavos. Errores RFC 7807. No comunica dinero real."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000/api/v1",
+      "description": "Desarrollo local (puerto por confirmar en implementación)"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Auth"
+    },
+    {
+      "name": "Accounts"
+    },
+    {
+      "name": "Beneficiaries"
+    },
+    {
+      "name": "Transfers"
+    },
+    {
+      "name": "Movements"
+    }
+  ],
+  "paths": {
+    "/auth/register": {
+      "post": {
+        "summary": "Crear identidad de acceso",
+        "operationId": "register",
+        "tags": [
+          "Auth"
+        ],
+        "responses": {
+          "201": {
+            "description": "Usuario creado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegisterResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "Autenticación con credenciales",
+        "operationId": "login",
+        "tags": [
+          "Auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "Acceso concedido. WEB recibe refresh en cookie; MOBILE en cuerpo.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "summary": "Rotación de refresh token",
+        "operationId": "refresh",
+        "tags": [
+          "Auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "Renovación con invalidación del refresh anterior.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "summary": "Revocar sesión de refresh",
+        "operationId": "logout",
+        "tags": [
+          "Auth"
+        ],
+        "responses": {
+          "200": {
+            "description": "Sesión revocada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogoutResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/accounts": {
+      "get": {
+        "summary": "Cuentas y saldos propios",
+        "operationId": "listAccounts",
+        "tags": [
+          "Accounts"
+        ],
+        "responses": {
+          "200": {
+            "description": "Respuesta JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountsResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/beneficiaries": {
+      "get": {
+        "summary": "Listar beneficiarios propios",
+        "operationId": "listBeneficiaries",
+        "tags": [
+          "Beneficiaries"
+        ],
+        "responses": {
+          "200": {
+            "description": "Respuesta JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BeneficiariesResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "summary": "Crear beneficiario con CLABE verificada",
+        "operationId": "createBeneficiary",
+        "tags": [
+          "Beneficiaries"
+        ],
+        "responses": {
+          "201": {
+            "description": "Beneficiario creado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Beneficiary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBeneficiaryRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/transfers": {
+      "post": {
+        "summary": "Crear transferencia idempotente",
+        "operationId": "createTransfer",
+        "tags": [
+          "Transfers"
+        ],
+        "responses": {
+          "201": {
+            "description": "Transferencia completada en PostgreSQL",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransferResponse"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Intención pendiente de confirmación OTP",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransferResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTransferRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/transfers/{transferId}": {
+      "get": {
+        "summary": "Consultar estado real de una transferencia propia",
+        "operationId": "getTransfer",
+        "tags": [
+          "Transfers"
+        ],
+        "responses": {
+          "200": {
+            "description": "Respuesta JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransferResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TransferId"
+          }
+        ]
+      }
+    },
+    "/transfers/{transferId}/confirm": {
+      "post": {
+        "summary": "Confirmar transferencia pendiente con OTP",
+        "operationId": "confirmTransfer",
+        "tags": [
+          "Transfers"
+        ],
+        "responses": {
+          "200": {
+            "description": "Transferencia completada",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransferResponse"
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "Transferencia aún pendiente de confirmación",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransferResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/TransferId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConfirmTransferRequest"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/movements": {
+      "get": {
+        "summary": "Consultar movimientos con cursor y filtros",
+        "operationId": "listMovements",
+        "tags": [
+          "Movements"
+        ],
+        "responses": {
+          "200": {
+            "description": "Respuesta JSON",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MovementsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Problem Details RFC 7807",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/AccountFilter"
+          },
+          {
+            "$ref": "#/components/parameters/FromDate"
+          },
+          {
+            "$ref": "#/components/parameters/ToDate"
+          },
+          {
+            "$ref": "#/components/parameters/TypeFilter"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "parameters": {
+      "RequestId": {
+        "name": "X-Request-ID",
+        "in": "header",
+        "description": "Identificador opcional; el servidor garantiza uno nuevo/verificado.",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "description": "UUID recomendado; única por usuario y payload inmutable.",
+        "schema": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        }
+      },
+      "TransferId": {
+        "name": "transferId",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "Cursor": {
+        "name": "cursor",
+        "in": "query",
+        "schema": {
+          "type": "string"
+        },
+        "description": "Cursor opaco HMAC ligado al usuario y filtros."
+      },
+      "FromDate": {
+        "name": "from",
+        "in": "query",
+        "schema": {
+          "type": "string",
+          "format": "date"
+        },
+        "description": "Día inicial inclusivo en America/Mexico_City."
+      },
+      "ToDate": {
+        "name": "to",
+        "in": "query",
+        "schema": {
+          "type": "string",
+          "format": "date"
+        },
+        "description": "Día final inclusivo en America/Mexico_City."
+      },
+      "TypeFilter": {
+        "name": "type",
+        "in": "query",
+        "schema": {
+          "type": "string",
+          "enum": [
+            "DEBIT",
+            "CREDIT"
+          ]
+        }
+      },
+      "AccountFilter": {
+        "name": "accountId",
+        "in": "query",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "Limit": {
+        "name": "limit",
+        "in": "query",
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 20
+        }
+      }
+    },
+    "schemas": {
+      "Problem": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "format": "uri"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer"
+          },
+          "detail": {
+            "type": "string"
+          },
+          "instance": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "code": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": true,
+        "required": [
+          "type",
+          "title",
+          "status",
+          "requestId",
+          "code"
+        ]
+      },
+      "RegisterRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 12,
+            "maxLength": 128
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "email",
+          "password"
+        ]
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name",
+          "email"
+        ]
+      },
+      "RegisterResponse": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/User"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "user"
+        ]
+      },
+      "LoginRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string"
+          },
+          "client": {
+            "type": "string",
+            "enum": [
+              "WEB",
+              "MOBILE"
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "email",
+          "password",
+          "client"
+        ]
+      },
+      "AuthResponse": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string"
+          },
+          "accessExpiresInSeconds": {
+            "type": "integer",
+            "example": 900
+          },
+          "refreshToken": {
+            "type": "string",
+            "description": "Solo clientes MOBILE; en WEB se usa cookie HttpOnly."
+          },
+          "user": {
+            "$ref": "#/components/schemas/User"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "accessToken",
+          "accessExpiresInSeconds",
+          "user"
+        ]
+      },
+      "RefreshRequest": {
+        "type": "object",
+        "properties": {
+          "client": {
+            "type": "string",
+            "enum": [
+              "WEB",
+              "MOBILE"
+            ]
+          },
+          "refreshToken": {
+            "type": "string",
+            "description": "Obligatorio en MOBILE; WEB presenta cookie segura."
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "client"
+        ]
+      },
+      "LogoutResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "const": true
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "success"
+        ]
+      },
+      "Account": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "clabeMasked": {
+            "type": "string",
+            "example": "**************1234"
+          },
+          "currency": {
+            "type": "string",
+            "const": "MXN"
+          },
+          "balanceCents": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]*)$",
+            "description": "Valor exacto en centavos; no usar float."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "BLOCKED"
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "clabeMasked",
+          "currency",
+          "balanceCents",
+          "status"
+        ]
+      },
+      "AccountsResponse": {
+        "type": "object",
+        "properties": {
+          "accounts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Account"
+            }
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "accounts"
+        ]
+      },
+      "Beneficiary": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "alias": {
+            "type": "string"
+          },
+          "clabeMasked": {
+            "type": "string"
+          },
+          "isInternal": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "name",
+          "alias",
+          "clabeMasked",
+          "isInternal"
+        ]
+      },
+      "CreateBeneficiaryRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "alias": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "clabe": {
+            "type": "string",
+            "pattern": "^[0-9]{18}$",
+            "description": "Requiere validación adicional de dígito verificador."
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "alias",
+          "clabe"
+        ]
+      },
+      "BeneficiariesResponse": {
+        "type": "object",
+        "properties": {
+          "beneficiaries": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Beneficiary"
+            }
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "beneficiaries"
+        ]
+      },
+      "CreateTransferRequest": {
+        "type": "object",
+        "properties": {
+          "sourceAccountId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "beneficiaryId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "destinationAccountId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "amount": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]{1,2})?$",
+            "description": "Importe MXN decimal exacto como cadena. Debe ser mayor a cero."
+          },
+          "concept": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 140
+          },
+          "reference": {
+            "type": "string",
+            "pattern": "^[0-9]{1,7}$"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "sourceAccountId",
+          "amount",
+          "concept",
+          "reference"
+        ],
+        "oneOf": [
+          {
+            "required": [
+              "beneficiaryId"
+            ],
+            "not": {
+              "required": [
+                "destinationAccountId"
+              ]
+            }
+          },
+          {
+            "required": [
+              "destinationAccountId"
+            ],
+            "not": {
+              "required": [
+                "beneficiaryId"
+              ]
+            }
+          }
+        ]
+      },
+      "Transfer": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PROCESSING",
+              "PENDING_CONFIRMATION",
+              "COMPLETED",
+              "REJECTED"
+            ]
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "BENEFICIARY",
+              "OWN_ACCOUNTS"
+            ]
+          },
+          "sourceAccountId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "destinationAccountMasked": {
+            "type": "string"
+          },
+          "amountCents": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]*)$",
+            "description": "Valor exacto en centavos; no usar float."
+          },
+          "concept": {
+            "type": "string"
+          },
+          "reference": {
+            "type": "string"
+          },
+          "requiresOtp": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "completedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "rejectionCode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "status",
+          "kind",
+          "sourceAccountId",
+          "destinationAccountMasked",
+          "amountCents",
+          "concept",
+          "reference",
+          "requiresOtp",
+          "createdAt",
+          "completedAt",
+          "rejectionCode"
+        ]
+      },
+      "TransferResponse": {
+        "type": "object",
+        "properties": {
+          "transfer": {
+            "$ref": "#/components/schemas/Transfer"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "transfer"
+        ]
+      },
+      "ConfirmTransferRequest": {
+        "type": "object",
+        "properties": {
+          "otp": {
+            "type": "string",
+            "pattern": "^[0-9]{6}$"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "otp"
+        ]
+      },
+      "Movement": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "transferId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "accountId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "DEBIT",
+              "CREDIT"
+            ]
+          },
+          "signedAmountCents": {
+            "type": "string",
+            "pattern": "^-?[0-9]+$"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "concept": {
+            "type": "string"
+          },
+          "reference": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "transferId",
+          "accountId",
+          "type",
+          "signedAmountCents",
+          "createdAt",
+          "concept",
+          "reference"
+        ]
+      },
+      "MovementsResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Movement"
+            }
+          },
+          "nextCursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "items",
+          "nextCursor"
+        ]
+      }
+    }
+  }
+}
