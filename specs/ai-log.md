@@ -313,3 +313,16 @@
 - **Evidencia manual:** 2 pruebas unitarias T-16, 6 pruebas de integración T-16 y 9 pruebas de regresión T-15 aprobadas, sin fallos; ESLint, TypeScript y `check:types` aprobados.
 - **Cobertura pendiente:** no consta evidencia específica de confirmaciones paralelas ni de contabilización cerca de medianoche en Ciudad de México; ampliar en T-19 antes de declarar cobertura financiera completa.
 - **Trazabilidad Git:** `208691d` (implementación); `3f46275` (integración en `main`).
+
+## T-18 — Historial de movimientos con cursor
+
+- **Herramienta:** ChatGPT (GPT-6).
+- **Objetivo:** implementar la consulta autenticada del historial financiero conforme a RF-11 y RNF-06.
+- **Implementación:** endpoint `GET /api/v1/movements`, consulta de asientos contables con filtros por cuenta, tipo y fechas del calendario `America/Mexico_City`.
+- **Decisiones técnicas:** paginación basada en `(created_at DESC, id DESC)`, sin `OFFSET`; cursor opaco protegido mediante HMAC y vinculado al usuario y filtros. Se preserva la precisión temporal de PostgreSQL.
+- **Seguridad:** validación de propiedad de cuentas, rechazo de cursores manipulados y prevención de acceso a movimientos ajenos. Operaciones exclusivamente de lectura.
+- **Pruebas:** 3 unitarias y 5 de integración aprobadas. Se verificaron paginación sin duplicados, aplicación de filtros, incorporación de movimientos entre páginas y controles de autorización.
+- **Verificaciones:** ESLint, TypeScript y sincronización OpenAPI aprobados mediante ejecución manual.
+- **Regresión completa:** pendiente de registrar el resultado final.
+- **Limitaciones:** medición de rendimiento con 100,000 movimientos y análisis de índices pendientes de T-20.
+- **Estado:** pruebas específicas aprobadas; cierre de Git pendiente.
