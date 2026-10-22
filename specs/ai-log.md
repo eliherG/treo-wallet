@@ -325,4 +325,17 @@
 - **Verificaciones:** ESLint, TypeScript y sincronización OpenAPI aprobados mediante ejecución manual.
 - **Regresión completa:** pendiente de registrar el resultado final.
 - **Limitaciones:** medición de rendimiento con 100,000 movimientos y análisis de índices pendientes de T-20.
-- **Estado:** pruebas específicas aprobadas; cierre de Git pendiente.
+- **Estado:** pruebas específicas aprobadas.
+
+## T-17 — Estado de transferencias y comprobantes
+
+- **Herramienta:** ChatGPT (GPT-6).
+- **Objetivo:** implementar la consulta autenticada de estados y comprobantes conforme a RF-12 y RF-13.
+- **Implementación:** endpoint `GET /api/v1/transfers/:transferId` con recuperación del estado persistido, fecha de contabilización, importe exacto, referencia y destino enmascarado.
+- **Decisiones técnicas:** respuesta conforme a OpenAPI, sin campos adicionales; comprobante final exclusivamente para operaciones `COMPLETED`. Los estados `PENDING_CONFIRMATION` y `REJECTED` no generan comprobantes de éxito.
+- **Seguridad:** consultas restringidas al usuario autenticado. Las transferencias inexistentes y ajenas devuelven 404 sin revelar información.
+- **Pruebas:** 5 pruebas de integración aprobadas, 0 fallidas. Se verificaron estados, enmascaramiento, autorización y errores HTTP RFC 7807.
+- **Verificaciones:** ESLint, TypeScript en todos los workspaces y comprobación OpenAPI aprobados manualmente.
+- **Regresión acumulada:** pendiente de incorporar el resultado verificado.
+- **Revisión humana:** ejecución de pruebas y control de commits por el desarrollador.
+- **Estado:** implementación verificada en pruebas específicas; regresión y cierre de Git pendientes.

@@ -9,6 +9,7 @@ import { createAccountsRouter } from './modules/accounts/accounts.routes.js';
 import { createBeneficiariesRouter } from './modules/beneficiaries/beneficiaries.routes.js';
 import { createTransfersRouter } from './modules/transfers/transfers.routes.js';
 import { createMovementsRouter } from './modules/movements/movements.routes.js';
+import { createTransferStatusRouter } from './modules/transfers/transfer-status.routes.js';
 import { createAuthRouter } from './modules/auth/auth.routes.js';
 import { AccessTokens } from './modules/auth/jwt.js';
 import { RefreshSessionService } from './modules/auth/refresh-session.service.js';
@@ -38,6 +39,7 @@ async function main(): Promise<void> {
     api.use(createBeneficiariesRouter(db, tokens));
     api.use(createTransfersRouter(db, tokens));
     api.use(createMovementsRouter(db, tokens));
+    api.use(createTransferStatusRouter(db, tokens));
   } });
   const server = app.listen(port, host, () => {
     console.log(JSON.stringify({ event: 'http.listening', host, port }));
