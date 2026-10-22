@@ -284,14 +284,32 @@
 - **Regresiones confirmadas:** beneficiarios **12/12**, cuentas **6/6**, autenticación **19/19**, HTTP **10/10** y PostgreSQL **23/23**. Total acumulado: **106 pruebas aprobadas, 0 fallidas**.
 - **Cierre:** verificaciones satisfactorias según la evidencia comunicada por el desarrollador.
 
-## T-14 — Registro de intención e idempotencia persistente
+## 2026-10-22 — T-14: intención e idempotencia persistente
 
-- **Herramienta:** ChatGPT (GPT-6).
-- **Objetivo:** implementar la persistencia transaccional de intenciones de transferencia y prevenir duplicaciones conforme a RF-13 y RF-06.
-- **Implementación:** canonicalización de instrucciones financieras, generación de huellas SHA-256, validación de claves de idempotencia y servicio de registro y recuperación de intenciones mediante PostgreSQL.
-- **Decisiones técnicas:** unicidad por usuario y clave mediante restricción PostgreSQL; reutilización de intenciones existentes ante solicitudes equivalentes; rechazo de payload diferente con HTTP 409; preservación de precisión monetaria y referencias con ceros iniciales.
-- **Integridad:** transacciones con rollback ante fallos y control de solicitudes concurrentes. No se implementaron débitos, créditos, ledger ni consumo del límite diario.
-- **Pruebas:** 9 unitarias y 7 de integración correspondientes a T-14, todas aprobadas. También pasaron las 106 pruebas anteriores: 122 pruebas acumuladas, 0 fallidas.
-- **Verificaciones:** ESLint, TypeScript y comprobación de tipos OpenAPI satisfactorios.
-- **Ejecución:** las verificaciones fueron realizadas manualmente por el desarrollador.
-- **Estado:** implementación verificada.
+- **Herramienta:** ChatGPT (GPT-6); implementación asistida mediante revisión humana y ejecución manual de comandos.
+- **Objetivo:** evitar que los reintentos de una instrucción financiera creen intenciones duplicadas (RF-13 y RF-06).
+- **Implementación:** canonicalización de instrucciones, huella SHA-256, persistencia en PostgreSQL mediante `INSERT ... ON CONFLICT DO NOTHING`, unicidad por `(sender_user_id, idempotency_key)` y recuperación del estado registrado. Una misma llave con otro contenido se rechaza con `409 IDEMPOTENCY_CONFLICT`.
+- **Decisiones:** importes exactos y referencias preservadas en el hash; aislamiento por usuario, control de concurrencia y rollback ante error. No se realizan movimientos de dinero en esta tarea.
+- **Evidencia manual:** ESLint, TypeScript y `check:types` aprobados; 9 pruebas unitarias y 7 de integración de T-14 aprobadas; 106 pruebas anteriores de regresión aprobadas; **122/122 pruebas acumuladas**, sin fallos.
+- **Trazabilidad Git:** `3a39e7d` (implementación); `fd01362` (integración en `main`).
+
+## 2026-10-22 — T-15: transferencias atómicas sin OTP
+
+- **Herramienta:** ChatGPT (GPT-6), con incorporación, correcciones y verificaciones manuales por el desarrollador.
+- **Objetivo:** ejecutar transferencias internas exactas y atómicas, reutilizando las validaciones de T-13 y la idempotencia de T-14 (RF-06, RF-07, RF-09 y RF-14).
+- **Implementación:** `POST /api/v1/transfers`; transacción PostgreSQL única con bloqueo `FOR UPDATE` de remitente y cuentas en orden determinista, revalidación bajo bloqueo, débito/crédito en centavos `BIGINT`, dos entradas de ledger, límite diario según calendario `America/Mexico_City` y auditoría sanitizada. Replays no vuelven a contabilizar.
+- **Decisiones:** saldo o cupo insuficiente generan rechazo sin efectos contables; fallos técnicos revierten la transacción. Antes de T-16, importes superiores a $5,000 MXN no se debitaban sin OTP.
+- **Correcciones verificadas:** adaptación de imports y firmas a la versión efectiva de T-13; conversión monetaria mediante `parseMxnToCents`; tipado explícito `::text` de parámetros en `jsonb_build_object` para resolver un error SQL `42P18`.
+- **Evidencia manual:** 9 pruebas de integración T-15 aprobadas; ESLint, TypeScript y `check:types` aprobados. Las regresiones completas anteriores no cuentan con salida adjunta en esta entrada, por lo que no se certifica aquí el total acumulado.
+- **Trazabilidad Git:** `d82d52b` (implementación); `aa9334c` (integración en `main`).
+
+## 2026-10-22 — T-16: confirmación de transferencias mediante OTP
+
+- **Herramienta:** ChatGPT (GPT-6), con ejecución y revisión manual del desarrollador.
+- **Objetivo:** confirmar transferencias superiores a $5,000 MXN mediante desafío OTP simulado y aplicar la contabilidad únicamente tras una confirmación válida (RF-09, RF-10 y RF-13).
+- **Implementación:** estado `PENDING_CONFIRMATION` sin afectar saldos ni cupo; desafío vinculado a la transferencia mediante HMAC; vencimiento de cinco minutos y máximo tres errores; confirmación autorizada, rechazo por expiración y reutilización del motor atómico de T-15. OTP fijo limitado a entorno local/pruebas, expresamente deshabilitado en producción.
+- **Decisión:** contabilizar después de validar OTP y revalidar condiciones financieras; conservar estados e idempotencia para evitar repeticiones del débito.
+- **Corrección verificada:** eliminación de tres comprobaciones de rama `outcome === 'ERROR'` redundantes en pruebas de integración, responsables de cuatro errores `TS2367`; no se modificó el comportamiento del servicio.
+- **Evidencia manual:** 2 pruebas unitarias T-16, 6 pruebas de integración T-16 y 9 pruebas de regresión T-15 aprobadas, sin fallos; ESLint, TypeScript y `check:types` aprobados.
+- **Cobertura pendiente:** no consta evidencia específica de confirmaciones paralelas ni de contabilización cerca de medianoche en Ciudad de México; ampliar en T-19 antes de declarar cobertura financiera completa.
+- **Trazabilidad Git:** `208691d` (implementación); `3f46275` (integración en `main`).
