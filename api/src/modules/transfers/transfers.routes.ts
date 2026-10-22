@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { z } from 'zod';
 import type { DataSource } from 'typeorm';
 import { HttpProblem } from '../../http/http-problem.js';
 import { currentRequestId } from '../../http/middlewares/request-id.js';
@@ -26,7 +27,18 @@ export function createTransfersRouter(db: DataSource, tokens: AccessTokens): Rou
         requestId: currentRequestId(res),
       });
       if (result.outcome === 'ERROR') throw result.problem;
-      res.status(201).json({ transfer: result.transfer });
+      res.status(result.outcome === 'PENDING_CONFIRMATION' ? 202 : 201).json({ transfer: result.transfer });
+    });
+  router.post('/transfers/:transferId/confirm', requireAccess(db,tokens),
+    validateBody(z.object({otp:z.string().regex(/^[0-9]{6}$/)}).strict()),async(req,res)=>{
+      const transferId=z.string().uuid().safeParse(req.params.transferId);
+      if(!transferId.success) throw new HttpProblem(400,'INVALID_TRANSFER_ID',
+        'Identificador inválido','La transferencia indicada no es válida.');
+      const result=await service.confirm({authenticatedUserId:authenticatedUserId(res),
+        transferId:transferId.data,otp:req.body.otp as string,
+        requestId:currentRequestId(res)});
+      if(result.outcome==='ERROR') throw result.problem;
+      res.status(result.outcome==='PENDING_CONFIRMATION' ? 202 : 200).json({transfer:result.transfer});
     });
   return router;
 }

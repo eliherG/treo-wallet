@@ -24,6 +24,8 @@ const service = new AtomicTransferService(db);
 const users = new Set<string>();
 const ROLLBACK = Symbol('rollback verified financial transaction');
 const logger = pino({ level: 'silent' });
+process.env.TREO_DEMO_OTP ??= '123456';
+process.env.TREO_OTP_HMAC_SECRET ??= 't16-tests-only-secret-material-length-32-abcdef';
 const app = createApp({ logger, registerRoutes(router) {
   router.use(createAuthRouter(auth));
   router.use(createTransfersRouter(db, tokens));
@@ -248,14 +250,16 @@ test('T-15: fuente BLOCKED o ajena se rechaza sin mover dinero', async () => {
   });
 });
 
-test('T-15: importe superior a $5,000 requiere OTP y no crea intención sin desafío', async () => {
+test('T-16: importe superior a $5,000 crea intención OTP sin movimientos', async () => {
   const f = await fixture('otp-boundary', '1000000');
   await rollbackCase(async (tx) => {
     const high = await service.submitInTransaction(tx, submission(f, '5000.01'));
-    assert.equal(high.outcome, 'ERROR');
-    if (high.outcome === 'ERROR') assert.equal(high.problem.code, 'OTP_NOT_AVAILABLE');
-    const rows = await tx.query('SELECT id FROM transfers WHERE sender_user_id=$1', [f.userId]) as unknown[];
-    assert.equal(rows.length, 0);
+    assert.equal(high.outcome, 'PENDING_CONFIRMATION');
+    const rows = await tx.query('SELECT id,status FROM transfers WHERE sender_user_id=$1', [f.userId]) as Array<{id:string;status:string}>;
+    assert.equal(rows.length, 1);
+    assert.equal(rows[0]?.status, 'PENDING_CONFIRMATION');
+    const ledger = await tx.query('SELECT id FROM ledger_entries WHERE transfer_id=$1', [rows[0]?.id]) as unknown[];
+    assert.equal(ledger.length, 0);
     const exact = await service.submitInTransaction(tx, submission(f, '5000.00'));
     assert.equal(exact.outcome, 'COMPLETED');
   });
