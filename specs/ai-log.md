@@ -147,7 +147,7 @@
   - Migraciones ejecutadas en desarrollo y pruebas; cero migraciones pendientes.
   - ESLint y TypeScript sin errores.
 - **Limitaciones:** las entidades, restricciones financieras y pruebas de integración del dominio se implementarán en tareas posteriores.
-- **Estado:** implementación verificada; commit pendiente.
+- **Estado:** implementación verificada.
 
 ## T-03 — Modelo de usuarios, cuentas y sesiones
 
@@ -159,7 +159,7 @@
 - **Pruebas de integración:** 4 ejecutadas, 4 aprobadas, 0 fallidas.
 - **Validaciones adicionales:** ESLint y TypeScript sin errores.
 - **Alcance pendiente:** registro, autenticación JWT y rotación efectiva de tokens corresponden a tareas posteriores.
-- **Estado:** implementación verificada; commit pendiente.
+- **Estado:** implementación verificada.
 
 ## T-04 — Modelo de beneficiarios
 
@@ -171,7 +171,7 @@
 - **Pruebas:** 8 ejecutadas, 8 aprobadas, 0 fallidas (T-03 y T-04).
 - **Validaciones:** ESLint y TypeScript sin errores.
 - **Alcance pendiente:** validación de checksum CLABE y endpoints de beneficiarios en T-12.
-- **Estado:** implementación verificada; commit pendiente.
+- **Estado:** implementación verificada.
 
 ## T-05 — Esquema financiero
 
@@ -194,7 +194,7 @@
 - **Pruebas:** 23 pruebas de integración aprobadas, 0 fallidas, incluidas 8 pruebas nuevas de T-06.
 - **Validaciones:** ESLint y TypeScript sin errores.
 - **Alcance pendiente:** servicios de transferencias, concurrencia, idempotencia y reglas operativas en tareas posteriores.
-- **Estado:** implementación y pruebas verificadas; commit pendiente.
+- **Estado:** implementación y pruebas verificadas.
 
 ## T-07 — Contratos TypeScript compartidos desde OpenAPI
 
@@ -206,7 +206,7 @@
 - **Corrección:** incorporación de las bibliotecas `ES2022`, `DOM` y `DOM.Iterable` en los respectivos archivos `tsconfig.json`, sin modificar la configuración global del backend.
 - **Verificaciones:** `check:types`, `test:types`, ESLint y TypeScript satisfactorios en los cuatro workspaces.
 - **Regresión:** 23 pruebas de integración de PostgreSQL aprobadas, 0 fallidas.
-- **Estado:** implementación validada; commit y merge pendientes.
+- **Estado:** implementación validada.
 
 ## T-08 — Infraestructura HTTP de API
 
@@ -218,7 +218,7 @@
 - **Corrección:** delegación de errores mediante `next(error)` cuando los headers ya fueron enviados y eliminación de una importación innecesaria en las pruebas.
 - **Verificaciones:** ESLint y TypeScript correctos; 10 pruebas HTTP y 23 pruebas de integración PostgreSQL aprobadas; contrato OpenAPI sincronizado.
 - **Alcance pendiente:** registro, autenticación JWT y protección efectiva de recursos en T-09.
-- **Estado:** pruebas automatizadas aprobadas; validación manual y commit pendientes.
+- **Estado:** pruebas automatizadas aprobadas.
 
 ## T-09 — Registro y autenticación JWT
 
@@ -230,7 +230,7 @@
 - **Verificaciones:** ESLint, TypeScript y sincronización OpenAPI satisfactorios.
 - **Pruebas:** 9 pruebas nuevas de autenticación aprobadas, además de 10 pruebas HTTP y 23 pruebas PostgreSQL anteriores; 42 pruebas aprobadas en total, sin fallos.
 - **Alcance pendiente:** rotación, revocación y detección de reutilización de refresh tokens en T-10; consulta de cuentas en T-11.
-- **Estado:** implementación y pruebas verificadas; commit pendiente.
+- **Estado:** implementación y pruebas verificadas.
 
 ## T-10 — Refresh rotativo y logout
 
@@ -243,4 +243,16 @@
 - **Validación:** se ejecutó un diagnóstico temporal para aislar el error, se corrigió la implementación y se eliminaron los archivos de diagnóstico.
 - **Pruebas:** 19 pruebas de autenticación, 10 HTTP y 23 de PostgreSQL aprobadas; 52 en total, sin fallos.
 - **Verificaciones adicionales:** ESLint, TypeScript y sincronización OpenAPI satisfactorios.
+- **Estado:** implementación verificada.
+
+## T-11 — Consulta de cuentas propias
+
+- **Herramienta:** ChatGPT (GPT-6).
+- **Objetivo:** implementar la consulta autenticada de cuentas y saldos conforme a RF-03.
+- **Implementación:** endpoint `GET /api/v1/accounts`, rutas Express protegidas mediante JWT y servicio de consulta con TypeORM y PostgreSQL.
+- **Decisiones técnicas:** obtener el propietario exclusivamente del JWT verificado, filtrar las cuentas por `user_id`, enmascarar la CLABE y serializar saldos `BIGINT` como cadenas para evitar pérdida de precisión.
+- **Casos verificados:** usuario con una cuenta, usuario sin cuentas, múltiples cuentas, saldos elevados, cuentas bloqueadas, aislamiento entre propietarios, saldos actualizados y rechazo de credenciales inválidas.
+- **Verificaciones:** ESLint y TypeScript sin errores; contrato OpenAPI sincronizado.
+- **Pruebas:** 6 pruebas nuevas de T-11, 19 de autenticación, 10 HTTP y 23 de PostgreSQL aprobadas; 58 pruebas en total, 0 fallidas.
+- **Alcance pendiente:** gestión de beneficiarios en T-12 y operaciones financieras en tareas posteriores.
 - **Estado:** implementación verificada; commit pendiente.
