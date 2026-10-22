@@ -231,3 +231,16 @@
 - **Pruebas:** 9 pruebas nuevas de autenticación aprobadas, además de 10 pruebas HTTP y 23 pruebas PostgreSQL anteriores; 42 pruebas aprobadas en total, sin fallos.
 - **Alcance pendiente:** rotación, revocación y detección de reutilización de refresh tokens en T-10; consulta de cuentas en T-11.
 - **Estado:** implementación y pruebas verificadas; commit pendiente.
+
+## T-10 — Refresh rotativo y logout
+
+- **Herramienta:** ChatGPT (GPT-6).
+- **Objetivo:** implementar renovación segura de sesiones, revocación de refresh tokens y cierre de sesión conforme a RF-02.
+- **Implementación:** endpoints `/auth/refresh` y `/auth/logout`, rotación transaccional de tokens, detección de reutilización, revocación por familia y controles de origen para clientes web.
+- **Decisiones técnicas:** bloqueos de filas en PostgreSQL para serializar renovaciones concurrentes; persistencia exclusiva de hashes de refresh; separación de sesiones independientes; cookies HttpOnly para web y tokens opacos para móvil.
+- **Problema detectado:** la implementación inicial interpretaba incorrectamente la estructura devuelta por `QueryRunner.query()` al ejecutar un `UPDATE ... RETURNING`. Esto provocaba un conflicto de rotación y respuestas HTTP 500.
+- **Corrección:** interpretación explícita de las filas actualizadas y validación del identificador esperado, conservando el bloqueo y la transacción.
+- **Validación:** se ejecutó un diagnóstico temporal para aislar el error, se corrigió la implementación y se eliminaron los archivos de diagnóstico.
+- **Pruebas:** 19 pruebas de autenticación, 10 HTTP y 23 de PostgreSQL aprobadas; 52 en total, sin fallos.
+- **Verificaciones adicionales:** ESLint, TypeScript y sincronización OpenAPI satisfactorios.
+- **Estado:** implementación verificada; commit pendiente.

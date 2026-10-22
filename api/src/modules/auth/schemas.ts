@@ -13,5 +13,13 @@ export const loginSchema = z.object({
   client: z.enum(['WEB', 'MOBILE']),
 }).strict();
 
+// The OpenAPI contract makes refreshToken optional because WEB uses HttpOnly cookies.
+// Client-specific rules are enforced in the route (the token is never logged).
+export const refreshRequestSchema = z.object({
+  client: z.enum(['WEB', 'MOBILE']),
+  refreshToken: z.string().optional(),
+}).strict();
+
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
+export type RefreshRequestInput = z.infer<typeof refreshRequestSchema>;
