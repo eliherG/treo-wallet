@@ -13,7 +13,7 @@ async function main(): Promise<void> {
     const applied = await dataSource.runMigrations();
     console.log(`Migration run succeeded (${target}); applied: ${applied.length}.`);
     if (applied.length === 0) {
-      console.log('No pending migrations. Domain schema begins in T-03.');
+      console.log('No pending migrations.');
     }
   } finally {
     if (dataSource.isInitialized) await dataSource.destroy();
