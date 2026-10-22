@@ -195,3 +195,15 @@
 - **Validaciones:** ESLint y TypeScript sin errores.
 - **Alcance pendiente:** servicios de transferencias, concurrencia, idempotencia y reglas operativas en tareas posteriores.
 - **Estado:** implementación y pruebas verificadas; commit pendiente.
+
+## T-07 — Contratos TypeScript compartidos desde OpenAPI
+
+- **Herramienta:** ChatGPT (GPT-6).
+- **Objetivo:** establecer contratos TypeScript compartidos entre API, web y móvil a partir del OpenAPI 3.1 aprobado.
+- **Implementación:** generación automatizada mediante `openapi-typescript`, integración de `openapi-fetch`, exportaciones desde `@treo/shared` y verificaciones de sincronización del contrato.
+- **Decisiones técnicas:** mantener `specs/openapi.json` como fuente única de verdad; versionar los tipos generados y evitar definiciones manuales duplicadas.
+- **Problema detectado:** la configuración de TypeScript de los workspaces móvil y compartido no incluía los tipos estándar de Fetch requeridos por `openapi-fetch`.
+- **Corrección:** incorporación de las bibliotecas `ES2022`, `DOM` y `DOM.Iterable` en los respectivos archivos `tsconfig.json`, sin modificar la configuración global del backend.
+- **Verificaciones:** `check:types`, `test:types`, ESLint y TypeScript satisfactorios en los cuatro workspaces.
+- **Regresión:** 23 pruebas de integración de PostgreSQL aprobadas, 0 fallidas.
+- **Estado:** implementación validada; commit y merge pendientes.

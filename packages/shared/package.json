@@ -6,6 +6,21 @@
   "scripts": {
     "lint": "eslint . --max-warnings=0",
     "typecheck": "tsc --project tsconfig.json --noEmit",
-    "test": "node ../../scripts/unavailable.mjs test"
+    "test": "node ../../scripts/unavailable.mjs test",
+    "generate:types": "openapi-typescript ../../specs/openapi.json --output ./src/generated/api-types.ts",
+    "check:types": "openapi-typescript ../../specs/openapi.json --output ./src/generated/api-types.ts --check"
+  },
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "devDependencies": {
+    "openapi-typescript": "7.13.0"
+  },
+  "dependencies": {
+    "openapi-fetch": "0.17.0"
   }
 }
