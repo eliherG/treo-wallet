@@ -183,3 +183,15 @@
 - **Migraciones:** las ejecuciones observadas finalizaron correctamente sin migraciones pendientes; historial pendiente de confirmación.
 - **Limitaciones:** los triggers de integridad contable, la protección de estados terminales y los controles avanzados de auditoría corresponden a T-06.
 - **Estado:** pruebas aprobadas; revisión final y commit pendientes.
+
+## T-06 — Restricciones contables y auditoría
+
+- **Herramienta:** ChatGPT (GPT-6).
+- **Objetivo:** reforzar la integridad contable mediante restricciones ejecutadas por PostgreSQL.
+- **Implementación:** migración TypeORM con triggers diferidos para verificar transferencias completadas, protección de asientos y estados terminales, y controles de inmutabilidad de auditoría.
+- **Decisiones técnicas:** validación de exactamente dos asientos por transferencia completada; conciliación de importes, signos y cuentas; prohibición de modificaciones de registros protegidos; restricciones de permisos para el rol de aplicación.
+- **Verificaciones:** PostgreSQL 16 operativo; migración aplicada correctamente en desarrollo y pruebas; ejecuciones posteriores sin migraciones pendientes.
+- **Pruebas:** 23 pruebas de integración aprobadas, 0 fallidas, incluidas 8 pruebas nuevas de T-06.
+- **Validaciones:** ESLint y TypeScript sin errores.
+- **Alcance pendiente:** servicios de transferencias, concurrencia, idempotencia y reglas operativas en tareas posteriores.
+- **Estado:** implementación y pruebas verificadas; commit pendiente.
