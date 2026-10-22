@@ -21,7 +21,9 @@
     "test:transfers:integration": "tsx --test src/modules/transfers/tests/t13.integration.test.ts",
     "test:transfers:idempotency:unit": "tsx --test src/modules/transfers/tests/idempotency.test.ts",
     "test:transfers:idempotency:integration": "tsx --test src/modules/transfers/tests/t14.integration.test.ts",
-    "test:transfers:atomic": "tsx --test src/modules/transfers/tests/t15.integration.test.ts"
+    "test:transfers:atomic": "tsx --test src/modules/transfers/tests/t15.integration.test.ts",
+    "test:transfers:otp:unit": "tsx --test src/modules/transfers/tests/otp.test.ts",
+    "test:transfers:otp:integration": "tsx --test src/modules/transfers/tests/t16.integration.test.ts"
   },
   "dependencies": {
     "argon2": "0.45.1",
