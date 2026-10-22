@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { UserEntity } from '../modules/auth/entities/user.entity.js';
 import { AccountEntity } from '../modules/accounts/entities/account.entity.js';
 import { RefreshTokenEntity } from '../modules/auth/entities/refresh-token.entity.js';
+import { BeneficiaryEntity } from '../modules/beneficiaries/entities/beneficiary.entity.js';
 
 const databaseDirectory = dirname(fileURLToPath(import.meta.url));
 const repositoryRoot = resolve(databaseDirectory, '../../..');
@@ -36,7 +37,7 @@ export function createDataSource(
     username: role === 'migrator' ? 'treo_migrator' : 'treo_app',
     password: required(role === 'migrator' ? 'TREO_MIGRATOR_PASSWORD' : 'TREO_APP_PASSWORD'),
     database: target === 'test' ? required('DB_TEST_NAME') : required('DB_NAME'),
-    entities: [UserEntity, AccountEntity, RefreshTokenEntity],
+    entities: [UserEntity, AccountEntity, RefreshTokenEntity, BeneficiaryEntity],
     migrations: [join(databaseDirectory, 'migrations', '*.{ts,js}')],
     migrationsTableName: 'typeorm_migrations',
     migrationsRun: false,

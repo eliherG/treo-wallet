@@ -160,3 +160,15 @@
 - **Validaciones adicionales:** ESLint y TypeScript sin errores.
 - **Alcance pendiente:** registro, autenticación JWT y rotación efectiva de tokens corresponden a tareas posteriores.
 - **Estado:** implementación verificada; commit pendiente.
+
+## T-04 — Modelo de beneficiarios
+
+- **Herramienta:** ChatGPT (GPT-6).
+- **Objetivo:** implementar el modelo de persistencia de beneficiarios conforme a RF-04 y RF-05.
+- **Implementación:** entidad TypeORM, migración PostgreSQL y pruebas de integración.
+- **Decisiones técnicas:** unicidad compuesta `(user_id, clabe)`, validación de 18 dígitos mediante CHECK y asociación del beneficiario con su propietario mediante clave foránea.
+- **Verificaciones:** migración aplicada en desarrollo y pruebas; ejecuciones posteriores sin migraciones pendientes.
+- **Pruebas:** 8 ejecutadas, 8 aprobadas, 0 fallidas (T-03 y T-04).
+- **Validaciones:** ESLint y TypeScript sin errores.
+- **Alcance pendiente:** validación de checksum CLABE y endpoints de beneficiarios en T-12.
+- **Estado:** implementación verificada; commit pendiente.
