@@ -133,3 +133,19 @@
 - **Validación de una futura migración:** revisar cambios en reglas recomendadas y búsqueda de configuración, regenerar el lockfile desde la terminal del desarrollador y repetir instalación/auditoría, lint raíz y por workspace, y typecheck. No se cambiaron manifiestos, configuración ESLint ni lockfile en esta revisión.
 - **Pendientes de cierre:** el commit de T-01 y la inclusión del lockfile requieren autorización; no se dispone de un nuevo `git status` comunicado. [README.md](../README.md) conserva el estado anterior de instalación/verificación pendiente, que deberá sincronizarse en una actualización documental posterior. [tasks.md](./tasks.md) conserva `TODO`; no se modificó el plan aprobado ni se marcó `DONE`. La aceptación técnica registrada aquí no equivale al cierre formal con commit trazable.
 - **Cambios de esta interacción:** exclusivamente esta entrada en la bitácora. No se instalaron ni actualizaron dependencias, no se ejecutaron commits y no se inició T-02. Se mantiene el mensaje propuesto: `chore(repo): configurar monorepo npm y TypeScript estricto [T-01]`.
+
+
+## T-02 — Infraestructura PostgreSQL y TypeORM
+
+- **Herramienta:** ChatGPT (GPT-6).
+- **Objetivo:** configurar la infraestructura de persistencia para desarrollo e integración.
+- **Implementación:** PostgreSQL 16 mediante Docker Compose, bases de datos independientes, roles diferenciados y sistema de migraciones TypeORM.
+- **Decisiones técnicas:** separación de privilegios entre aplicación y migraciones; uso de `synchronize: false`; configuración reproducible mediante variables de entorno.
+- **Verificaciones ejecutadas:**
+  - Contenedor PostgreSQL en estado healthy.
+  - Conexiones satisfactorias a `treo_dev` y `treo_test`.
+  - Privilegios DDL comprobados para ambos roles.
+  - Migraciones ejecutadas en desarrollo y pruebas; cero migraciones pendientes.
+  - ESLint y TypeScript sin errores.
+- **Limitaciones:** las entidades, restricciones financieras y pruebas de integración del dominio se implementarán en tareas posteriores.
+- **Estado:** implementación verificada; commit pendiente.
