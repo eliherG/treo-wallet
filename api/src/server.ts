@@ -5,6 +5,7 @@ import pino from 'pino';
 import { createApp } from './app.js';
 import { createDataSource } from './database/data-source.js';
 import { AuthService } from './modules/auth/auth.service.js';
+import { createAccountsRouter } from './modules/accounts/accounts.routes.js';
 import { createAuthRouter } from './modules/auth/auth.routes.js';
 import { AccessTokens } from './modules/auth/jwt.js';
 import { RefreshSessionService } from './modules/auth/refresh-session.service.js';
@@ -28,7 +29,10 @@ async function main(): Promise<void> {
     logger.info(event, 'Authentication session event');
   });
   const router = createAuthRouter(auth, sessions);
-  const app = createApp({ logger, registerRoutes: (api) => api.use(router) });
+  const app = createApp({ logger, registerRoutes: (api) => {
+    api.use(router);
+    api.use(createAccountsRouter(db, tokens));
+  } });
   const server = app.listen(port, host, () => {
     console.log(JSON.stringify({ event: 'http.listening', host, port }));
   });

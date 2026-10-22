@@ -14,7 +14,8 @@
     "test:db": "tsx --test src/database/tests/*.integration.test.ts",
     "start": "tsx src/server.ts",
     "test:http": "tsx --test src/http/tests/*.test.ts",
-    "test:auth": "tsx --test src/modules/auth/tests/*.integration.test.ts"
+    "test:auth": "tsx --test src/modules/auth/tests/*.integration.test.ts",
+    "test:accounts": "tsx --test src/modules/accounts/tests/*.integration.test.ts"
   },
   "dependencies": {
     "argon2": "0.45.1",
