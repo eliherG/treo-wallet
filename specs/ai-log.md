@@ -267,7 +267,7 @@
 - **Verificaciones:** ESLint, TypeScript y sincronización OpenAPI satisfactorios.
 - **Pruebas:** 12 pruebas nuevas de T-12 aprobadas, incluidas 5 unitarias y 7 de integración. Las 58 pruebas anteriores también pasaron; 70 en total, sin fallos.
 - **Alcance pendiente:** validación del destino y ejecución de transferencias dentro del núcleo financiero.
-- **Estado:** implementación verificada; commit pendiente.
+- **Estado:** implementación verificada.
 
 ## 2026-10-22 — T-13: dinero exacto y validación de instrucciones
 
@@ -282,7 +282,7 @@
 - **Origen de la evidencia:** comandos ejecutados manualmente por el desarrollador y resultados confirmados por él; Codex no los ejecutó.
 - **Verificaciones confirmadas:** `npm run lint -w @treo/api`, `npm run typecheck -w @treo/api`, `npm run check:types`, `npm run lint` y `npm run typecheck`: correctos. `npm run test:transfers:unit -w @treo/api`: **26/26**; `npm run test:transfers:integration -w @treo/api`: **10/10**.
 - **Regresiones confirmadas:** beneficiarios **12/12**, cuentas **6/6**, autenticación **19/19**, HTTP **10/10** y PostgreSQL **23/23**. Total acumulado: **106 pruebas aprobadas, 0 fallidas**.
-- **Cierre:** verificaciones satisfactorias según la evidencia comunicada por el desarrollador; commit autorizado pendiente, sin SHA registrado. T-13 no se marca `DONE`.
+- **Cierre:** verificaciones satisfactorias según la evidencia comunicada por el desarrollador.
 
 ## T-14 — Registro de intención e idempotencia persistente
 
@@ -294,4 +294,4 @@
 - **Pruebas:** 9 unitarias y 7 de integración correspondientes a T-14, todas aprobadas. También pasaron las 106 pruebas anteriores: 122 pruebas acumuladas, 0 fallidas.
 - **Verificaciones:** ESLint, TypeScript y comprobación de tipos OpenAPI satisfactorios.
 - **Ejecución:** las verificaciones fueron realizadas manualmente por el desarrollador.
-- **Estado:** implementación verificada; commit pendiente.
+- **Estado:** implementación verificada.
