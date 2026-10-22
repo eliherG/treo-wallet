@@ -4,22 +4,34 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "node ../scripts/unavailable.mjs dev",
+    "dev": "tsx watch src/server.ts",
     "lint": "eslint . --max-warnings=0",
     "typecheck": "tsc --project tsconfig.json --noEmit",
     "test": "node ../scripts/unavailable.mjs test",
     "db:migrate": "tsx scripts/migrate.ts",
     "db:migrate:test": "tsx scripts/migrate.ts --test",
     "db:check": "tsx scripts/check-db.ts",
-    "test:db": "tsx --test src/database/tests/*.integration.test.ts"
+    "test:db": "tsx --test src/database/tests/*.integration.test.ts",
+    "start": "tsx src/server.ts",
+    "test:http": "tsx --test src/http/tests/*.test.ts"
   },
   "dependencies": {
+    "cors": "2.8.6",
     "dotenv": "^18.0.8",
+    "express": "5.3.0",
     "pg": "^8.23.1",
+    "pino": "10.4.0",
     "reflect-metadata": "^0.2.2",
-    "typeorm": "^1.1.2"
+    "swagger-ui-express": "5.0.1",
+    "typeorm": "^1.1.2",
+    "zod": "4.6.7"
   },
   "devDependencies": {
+    "@types/cors": "2.8.19",
+    "@types/express": "5.0.6",
+    "@types/supertest": "6.0.3",
+    "@types/swagger-ui-express": "4.1.8",
+    "supertest": "7.3.1",
     "tsx": "^4.23.15"
   }
 }

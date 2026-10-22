@@ -207,3 +207,15 @@
 - **Verificaciones:** `check:types`, `test:types`, ESLint y TypeScript satisfactorios en los cuatro workspaces.
 - **Regresión:** 23 pruebas de integración de PostgreSQL aprobadas, 0 fallidas.
 - **Estado:** implementación validada; commit y merge pendientes.
+
+## T-08 — Infraestructura HTTP de API
+
+- **Herramienta:** ChatGPT (GPT-6).
+- **Objetivo:** implementar la infraestructura HTTP modular de Treo Wallet mediante Express y TypeScript.
+- **Implementación:** aplicación Express, middleware de identificación de solicitudes, validación Zod, respuestas RFC 7807, logger JSON, configuración CORS, health check y documentación Swagger UI desde OpenAPI.
+- **Seguridad:** sanitización de errores internos y prevención de exposición de secretos, tokens, CLABE y cuerpos sensibles en los logs verificados.
+- **Problemas detectados:** dos errores de ESLint por parámetros e importaciones no utilizados.
+- **Corrección:** delegación de errores mediante `next(error)` cuando los headers ya fueron enviados y eliminación de una importación innecesaria en las pruebas.
+- **Verificaciones:** ESLint y TypeScript correctos; 10 pruebas HTTP y 23 pruebas de integración PostgreSQL aprobadas; contrato OpenAPI sincronizado.
+- **Alcance pendiente:** registro, autenticación JWT y protección efectiva de recursos en T-09.
+- **Estado:** pruebas automatizadas aprobadas; validación manual y commit pendientes.
