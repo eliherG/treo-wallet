@@ -11,7 +11,7 @@
     "db:migrate": "tsx scripts/migrate.ts",
     "db:migrate:test": "tsx scripts/migrate.ts --test",
     "db:check": "tsx scripts/check-db.ts",
-    "test:db": "tsx --test src/database/tests/t03.integration.test.ts"
+    "test:db": "tsx --test src/database/tests/*.integration.test.ts"
   },
   "dependencies": {
     "dotenv": "^18.0.8",
