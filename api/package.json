@@ -25,7 +25,8 @@
     "test:transfers:otp:unit": "tsx --test src/modules/transfers/tests/otp.test.ts",
     "test:transfers:otp:integration": "tsx --test src/modules/transfers/tests/t16.integration.test.ts",
     "test:movements:unit": "tsx --test src/modules/movements/tests/cursor.test.ts",
-    "test:movements:integration": "tsx --test src/modules/movements/tests/t18.integration.test.ts"
+    "test:movements:integration": "tsx --test src/modules/movements/tests/t18.integration.test.ts",
+    "test:transfers:status": "tsx --test src/modules/transfers/tests/t17.integration.test.ts"
   },
   "dependencies": {
     "argon2": "0.45.1",
