@@ -172,3 +172,14 @@
 - **Validaciones:** ESLint y TypeScript sin errores.
 - **Alcance pendiente:** validación de checksum CLABE y endpoints de beneficiarios en T-12.
 - **Estado:** implementación verificada; commit pendiente.
+
+## T-05 — Esquema financiero
+
+- **Herramienta:** ChatGPT (GPT-6).
+- **Objetivo:** implementar el esquema de persistencia financiera de Treo Wallet conforme a RF-06 a RF-14.
+- **Implementación:** entidades TypeORM y migración PostgreSQL para `transfers`, `ledger_entries`, `daily_transfer_usage`, `otp_challenges` y `audit_events`.
+- **Decisiones técnicas:** importes exactos con `BIGINT`, unicidad de idempotencia por usuario, restricciones de integridad referencial, control de estados y validaciones de importes, límites diarios e intentos OTP.
+- **Verificación:** ESLint y TypeScript sin errores; 15 pruebas de integración ejecutadas y aprobadas, incluyendo las suites anteriores de T-03 y T-04.
+- **Migraciones:** las ejecuciones observadas finalizaron correctamente sin migraciones pendientes; historial pendiente de confirmación.
+- **Limitaciones:** los triggers de integridad contable, la protección de estados terminales y los controles avanzados de auditoría corresponden a T-06.
+- **Estado:** pruebas aprobadas; revisión final y commit pendientes.

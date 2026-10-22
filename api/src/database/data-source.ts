@@ -7,6 +7,11 @@ import { UserEntity } from '../modules/auth/entities/user.entity.js';
 import { AccountEntity } from '../modules/accounts/entities/account.entity.js';
 import { RefreshTokenEntity } from '../modules/auth/entities/refresh-token.entity.js';
 import { BeneficiaryEntity } from '../modules/beneficiaries/entities/beneficiary.entity.js';
+import { TransferEntity } from '../modules/transfers/entities/transfer.entity.js';
+import { LedgerEntryEntity } from '../modules/transfers/entities/ledger-entry.entity.js';
+import { DailyTransferUsageEntity } from '../modules/transfers/entities/daily-transfer-usage.entity.js';
+import { OtpChallengeEntity } from '../modules/transfers/entities/otp-challenge.entity.js';
+import { AuditEventEntity } from '../modules/audit/entities/audit-event.entity.js';
 
 const databaseDirectory = dirname(fileURLToPath(import.meta.url));
 const repositoryRoot = resolve(databaseDirectory, '../../..');
@@ -37,7 +42,11 @@ export function createDataSource(
     username: role === 'migrator' ? 'treo_migrator' : 'treo_app',
     password: required(role === 'migrator' ? 'TREO_MIGRATOR_PASSWORD' : 'TREO_APP_PASSWORD'),
     database: target === 'test' ? required('DB_TEST_NAME') : required('DB_NAME'),
-    entities: [UserEntity, AccountEntity, RefreshTokenEntity, BeneficiaryEntity],
+    entities: [
+      UserEntity, AccountEntity, RefreshTokenEntity, BeneficiaryEntity,
+      TransferEntity, LedgerEntryEntity, DailyTransferUsageEntity,
+      OtpChallengeEntity, AuditEventEntity,
+    ],
     migrations: [join(databaseDirectory, 'migrations', '*.{ts,js}')],
     migrationsTableName: 'typeorm_migrations',
     migrationsRun: false,
