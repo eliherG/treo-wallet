@@ -18,7 +18,9 @@
     "test:accounts": "tsx --test src/modules/accounts/tests/*.integration.test.ts",
     "test:beneficiaries": "tsx --test src/modules/beneficiaries/tests/*.test.ts",
     "test:transfers:unit": "tsx --test src/modules/transfers/tests/money.test.ts src/modules/transfers/tests/schemas.test.ts src/modules/transfers/tests/validation.test.ts",
-    "test:transfers:integration": "tsx --test src/modules/transfers/tests/t13.integration.test.ts"
+    "test:transfers:integration": "tsx --test src/modules/transfers/tests/t13.integration.test.ts",
+    "test:transfers:idempotency:unit": "tsx --test src/modules/transfers/tests/idempotency.test.ts",
+    "test:transfers:idempotency:integration": "tsx --test src/modules/transfers/tests/t14.integration.test.ts"
   },
   "dependencies": {
     "argon2": "0.45.1",

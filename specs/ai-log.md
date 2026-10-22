@@ -283,3 +283,15 @@
 - **Verificaciones confirmadas:** `npm run lint -w @treo/api`, `npm run typecheck -w @treo/api`, `npm run check:types`, `npm run lint` y `npm run typecheck`: correctos. `npm run test:transfers:unit -w @treo/api`: **26/26**; `npm run test:transfers:integration -w @treo/api`: **10/10**.
 - **Regresiones confirmadas:** beneficiarios **12/12**, cuentas **6/6**, autenticación **19/19**, HTTP **10/10** y PostgreSQL **23/23**. Total acumulado: **106 pruebas aprobadas, 0 fallidas**.
 - **Cierre:** verificaciones satisfactorias según la evidencia comunicada por el desarrollador; commit autorizado pendiente, sin SHA registrado. T-13 no se marca `DONE`.
+
+## T-14 — Registro de intención e idempotencia persistente
+
+- **Herramienta:** ChatGPT (GPT-6).
+- **Objetivo:** implementar la persistencia transaccional de intenciones de transferencia y prevenir duplicaciones conforme a RF-13 y RF-06.
+- **Implementación:** canonicalización de instrucciones financieras, generación de huellas SHA-256, validación de claves de idempotencia y servicio de registro y recuperación de intenciones mediante PostgreSQL.
+- **Decisiones técnicas:** unicidad por usuario y clave mediante restricción PostgreSQL; reutilización de intenciones existentes ante solicitudes equivalentes; rechazo de payload diferente con HTTP 409; preservación de precisión monetaria y referencias con ceros iniciales.
+- **Integridad:** transacciones con rollback ante fallos y control de solicitudes concurrentes. No se implementaron débitos, créditos, ledger ni consumo del límite diario.
+- **Pruebas:** 9 unitarias y 7 de integración correspondientes a T-14, todas aprobadas. También pasaron las 106 pruebas anteriores: 122 pruebas acumuladas, 0 fallidas.
+- **Verificaciones:** ESLint, TypeScript y comprobación de tipos OpenAPI satisfactorios.
+- **Ejecución:** las verificaciones fueron realizadas manualmente por el desarrollador.
+- **Estado:** implementación verificada; commit pendiente.
