@@ -255,4 +255,16 @@
 - **Verificaciones:** ESLint y TypeScript sin errores; contrato OpenAPI sincronizado.
 - **Pruebas:** 6 pruebas nuevas de T-11, 19 de autenticación, 10 HTTP y 23 de PostgreSQL aprobadas; 58 pruebas en total, 0 fallidas.
 - **Alcance pendiente:** gestión de beneficiarios en T-12 y operaciones financieras en tareas posteriores.
+- **Estado:** implementación verificada.
+
+## T-12 — Validación CLABE y gestión de beneficiarios
+
+- **Herramienta:** ChatGPT (GPT-6).
+- **Objetivo:** implementar el registro y consulta de beneficiarios conforme a RF-04 y RF-05.
+- **Implementación:** endpoints `GET /api/v1/beneficiaries` y `POST /api/v1/beneficiaries`, validación mediante Zod, cálculo del dígito verificador CLABE y persistencia mediante TypeORM.
+- **Decisiones técnicas:** validación de 18 dígitos y checksum, unicidad de CLABE por propietario, obtención del usuario desde JWT, enmascaramiento de CLABE y determinación del atributo `isInternal` mediante consulta de cuentas internas.
+- **Seguridad:** aislamiento entre usuarios, validación de credenciales y rechazo de entradas inválidas sin exposición de información sensible.
+- **Verificaciones:** ESLint, TypeScript y sincronización OpenAPI satisfactorios.
+- **Pruebas:** 12 pruebas nuevas de T-12 aprobadas, incluidas 5 unitarias y 7 de integración. Las 58 pruebas anteriores también pasaron; 70 en total, sin fallos.
+- **Alcance pendiente:** validación del destino y ejecución de transferencias dentro del núcleo financiero.
 - **Estado:** implementación verificada; commit pendiente.

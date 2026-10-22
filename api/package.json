@@ -15,7 +15,8 @@
     "start": "tsx src/server.ts",
     "test:http": "tsx --test src/http/tests/*.test.ts",
     "test:auth": "tsx --test src/modules/auth/tests/*.integration.test.ts",
-    "test:accounts": "tsx --test src/modules/accounts/tests/*.integration.test.ts"
+    "test:accounts": "tsx --test src/modules/accounts/tests/*.integration.test.ts",
+    "test:beneficiaries": "tsx --test src/modules/beneficiaries/tests/*.test.ts"
   },
   "dependencies": {
     "argon2": "0.45.1",
