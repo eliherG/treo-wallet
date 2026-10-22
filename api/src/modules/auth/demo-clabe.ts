@@ -1,13 +1,8 @@
 import { randomInt } from 'node:crypto';
+import { clabeCheckDigit } from '../beneficiaries/clabe.js';
 
-/**
- * CLABE de demostración: prefijo ficticio 999 + 14 dígitos aleatorios
- * + dígito verificador oficial (pesos 3, 7, 1). No es una cuenta SPEI.
- */
+/** Fictitious 999 prefix for demo use only; not a real bank or SPEI account. */
 export function generateDemoClabe(): string {
   const first17 = `999${Array.from({ length: 14 }, () => randomInt(0, 10)).join('')}`;
-  const weights = [3, 7, 1] as const;
-  const checksumSum = [...first17].reduce((sum, digit, index) =>
-    sum + ((Number(digit) * weights[index % 3]!) % 10), 0);
-  return `${first17}${(10 - (checksumSum % 10)) % 10}`;
+  return `${first17}${clabeCheckDigit(first17)}`;
 }
