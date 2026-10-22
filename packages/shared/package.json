@@ -1,0 +1,11 @@
+{
+  "name": "@treo/shared",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint": "eslint . --max-warnings=0",
+    "typecheck": "tsc --project tsconfig.json --noEmit",
+    "test": "node ../../scripts/unavailable.mjs test"
+  }
+}

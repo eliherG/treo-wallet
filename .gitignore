@@ -1,0 +1,15 @@
+# Dependencias y salidas locales de todos los workspaces.
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+.expo/
+
+# Entorno local; las plantillas sin secretos sí se versionan.
+.env
+.env.*
+!.env.example
+
+# Archivos del sistema y logs de npm.
+.DS_Store
+npm-debug.log*
