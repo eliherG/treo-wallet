@@ -134,7 +134,6 @@
 - **Pendientes de cierre:** el commit de T-01 y la inclusión del lockfile requieren autorización; no se dispone de un nuevo `git status` comunicado. [README.md](../README.md) conserva el estado anterior de instalación/verificación pendiente, que deberá sincronizarse en una actualización documental posterior. [tasks.md](./tasks.md) conserva `TODO`; no se modificó el plan aprobado ni se marcó `DONE`. La aceptación técnica registrada aquí no equivale al cierre formal con commit trazable.
 - **Cambios de esta interacción:** exclusivamente esta entrada en la bitácora. No se instalaron ni actualizaron dependencias, no se ejecutaron commits y no se inició T-02. Se mantiene el mensaje propuesto: `chore(repo): configurar monorepo npm y TypeScript estricto [T-01]`.
 
-
 ## T-02 — Infraestructura PostgreSQL y TypeORM
 
 - **Herramienta:** ChatGPT (GPT-6).
@@ -148,4 +147,16 @@
   - Migraciones ejecutadas en desarrollo y pruebas; cero migraciones pendientes.
   - ESLint y TypeScript sin errores.
 - **Limitaciones:** las entidades, restricciones financieras y pruebas de integración del dominio se implementarán en tareas posteriores.
+- **Estado:** implementación verificada; commit pendiente.
+
+## T-03 — Modelo de usuarios, cuentas y sesiones
+
+- **Herramienta:** ChatGPT (GPT-6).
+- **Objetivo:** implementar la estructura inicial de identidad, cuentas financieras y sesiones conforme a las especificaciones aprobadas.
+- **Implementación:** entidades TypeORM para users, accounts y refresh_tokens; migración versionada con restricciones de integridad y relaciones.
+- **Decisiones técnicas:** identificadores UUID, saldos BIGINT en centavos, moneda MXN, unicidad de correo y CLABE, integridad referencial y referencias para rotación de refresh tokens.
+- **Verificación:** migración aplicada correctamente en desarrollo y pruebas; segunda ejecución sin migraciones pendientes.
+- **Pruebas de integración:** 4 ejecutadas, 4 aprobadas, 0 fallidas.
+- **Validaciones adicionales:** ESLint y TypeScript sin errores.
+- **Alcance pendiente:** registro, autenticación JWT y rotación efectiva de tokens corresponden a tareas posteriores.
 - **Estado:** implementación verificada; commit pendiente.
