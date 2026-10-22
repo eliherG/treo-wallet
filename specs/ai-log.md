@@ -219,3 +219,15 @@
 - **Verificaciones:** ESLint y TypeScript correctos; 10 pruebas HTTP y 23 pruebas de integración PostgreSQL aprobadas; contrato OpenAPI sincronizado.
 - **Alcance pendiente:** registro, autenticación JWT y protección efectiva de recursos en T-09.
 - **Estado:** pruebas automatizadas aprobadas; validación manual y commit pendientes.
+
+## T-09 — Registro y autenticación JWT
+
+- **Herramienta:** ChatGPT (GPT-6).
+- **Objetivo:** implementar registro de usuarios y autenticación con JWT conforme a RF-01 y RF-02.
+- **Implementación:** endpoints de registro y login, validación Zod, servicio de autenticación, persistencia mediante TypeORM y PostgreSQL, contraseñas Argon2id y emisión de JWT.
+- **Decisiones técnicas:** correo canónico único, creación transaccional de usuario y cuenta demo con saldo cero, JWT de acceso de 15 minutos, refresh inicial almacenado únicamente como hash, cookie HttpOnly para web y respuesta diferenciada para móvil.
+- **Seguridad:** respuestas genéricas ante credenciales incorrectas, control de intentos de login, validación de firma y expiración JWT, y exclusión de credenciales de las respuestas.
+- **Verificaciones:** ESLint, TypeScript y sincronización OpenAPI satisfactorios.
+- **Pruebas:** 9 pruebas nuevas de autenticación aprobadas, además de 10 pruebas HTTP y 23 pruebas PostgreSQL anteriores; 42 pruebas aprobadas en total, sin fallos.
+- **Alcance pendiente:** rotación, revocación y detección de reutilización de refresh tokens en T-10; consulta de cuentas en T-11.
+- **Estado:** implementación y pruebas verificadas; commit pendiente.

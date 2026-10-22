@@ -26,7 +26,8 @@
     "generate:types": "npm run generate:types -w @treo/shared",
     "check:types": "npm run check:types -w @treo/shared",
     "test:types": "node scripts/check-contract-propagation.mjs",
-    "test:http": "npm run test:http -w @treo/api"
+    "test:http": "npm run test:http -w @treo/api",
+    "test:auth": "npm run test:auth -w @treo/api"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",
