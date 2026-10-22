@@ -1,11 +1,13 @@
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { config } from 'dotenv';
+import pino from 'pino';
 import { createApp } from './app.js';
 import { createDataSource } from './database/data-source.js';
 import { AuthService } from './modules/auth/auth.service.js';
 import { createAuthRouter } from './modules/auth/auth.routes.js';
 import { AccessTokens } from './modules/auth/jwt.js';
+import { RefreshSessionService } from './modules/auth/refresh-session.service.js';
 
 config({ path: resolve(dirname(fileURLToPath(import.meta.url)), '../../.env'), quiet: true });
 
@@ -21,8 +23,12 @@ async function main(): Promise<void> {
   const db = createDataSource('app');
   await db.initialize();
   const auth = new AuthService(db, tokens);
-  const router = createAuthRouter(auth);
-  const app = createApp({ registerRoutes: (api) => api.use(router) });
+  const logger = pino({ base: null });
+  const sessions = new RefreshSessionService(db, tokens, (event) => {
+    logger.info(event, 'Authentication session event');
+  });
+  const router = createAuthRouter(auth, sessions);
+  const app = createApp({ logger, registerRoutes: (api) => api.use(router) });
   const server = app.listen(port, host, () => {
     console.log(JSON.stringify({ event: 'http.listening', host, port }));
   });
