@@ -407,3 +407,15 @@
 - **Validación manual de navegador y API:** Build Vite 8.3.5 exitoso, 180 módulos transformados.
 - **Verificaciones de lint, TypeScript, OpenAPI y build:** ESLint, TypeScript y OpenAPI correctos.
 - **Revisión humana:** Validación manual: registra únicamente los escenarios que efectivamente comprobe.
+
+## T-25 — Pruebas integradas y accesibilidad web
+
+- **Herramienta:** ChatGPT (GPT-6).
+- **Cobertura:** RF-03, RF-06, RF-08, RF-10, RF-11, RF-12, RF-13 y RNF-08.
+- **Implementación:** suite de integración React Testing Library y mejoras de accesibilidad en los formularios de transferencia, revisión y confirmación OTP.
+- **Escenarios:** saldo insuficiente HTTP 422, revisión previa, doble clic, idempotencia, recuperación de errores de red, OTP, transferencia rechazada, comprobante, actualización de saldos e historial y navegación por teclado.
+- **Accesibilidad:** mejoras de foco, asociación de errores con sus campos y estados accesibles. Cobertura automatizada sin sustituir una auditoría completa de accesibilidad.
+- **Incidencia corregida:** eliminación de una importación no utilizada (`waitFor`) detectada por ESLint.
+- **Resultados:** 9 pruebas nuevas aprobadas; regresión completa de 43 pruebas aprobadas en 10 archivos, sin fallos.
+- **Verificaciones:** ESLint, TypeScript, OpenAPI y build Vite 8.3.5 satisfactorios; 180 módulos transformados.
+- **Revisión humana:** pruebas y verificaciones ejecutadas manualmente antes de integrar los cambios.

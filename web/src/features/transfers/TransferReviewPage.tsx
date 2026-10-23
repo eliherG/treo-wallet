@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { useSession } from '../../app/SessionProvider';
@@ -17,6 +17,8 @@ export function TransferReviewPage() {
   const departing = useRef(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
+  const errorRef = useRef<HTMLParagraphElement>(null);
+  useEffect(() => { if (error) errorRef.current?.focus(); }, [error]);
   const [uncertain, setUncertain] = useState(false);
   const [knownId, setKnownId] = useState<string | null>(null);
   if (!draft) return departing.current ? null : <Navigate to="/transfer/new" replace />;
@@ -70,7 +72,7 @@ export function TransferReviewPage() {
         <div><dt>Referencia</dt><dd>{form.reference}</dd></div>
       </dl>
       <p className="inline-note">Si la operación requiere OTP, primero se creará una intención pendiente; no se descontará dinero hasta confirmarla.</p>
-      {error && <p role="alert" className="banner-error">{error}</p>}
+      {error && <p role="alert" ref={errorRef} tabIndex={-1} className="banner-error">{error}</p>}
       {uncertain && <p role="status" className="inline-note">Se conserva la misma llave de idempotencia para el reintento. No crees una operación nueva hasta conocer el estado de esta. {knownId && <Link to={`/transfer/${knownId}`}>Consultar estado</Link>}</p>}
       <div className="transfer-actions">
         <Link to="/transfer/new" className="btn-quiet" aria-disabled={busy} onClick={event => { if (busy || uncertain) event.preventDefault(); }}>Editar datos</Link>

@@ -17,6 +17,7 @@ export function TransferOtpPage() {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const locked = useRef(false);
+  const otpRef = useRef<HTMLInputElement>(null);
   const status = useQuery({
     queryKey: ['transfer', user?.id, id], enabled: valid && !!user, retry: false,
     queryFn: () => authorizedFetch<TransferResponse>(`/transfers/${encodeURIComponent(id)}`),
@@ -24,7 +25,12 @@ export function TransferOtpPage() {
   if (!valid) return <Navigate to="/transfer/new" replace />;
   const submit = async (event: FormEvent) => {
     event.preventDefault();
-    if (locked.current || !/^[0-9]{6}$/.test(otp)) { setError('Ingresa exactamente seis dígitos.'); return; }
+    if (locked.current) return;
+    if (!/^[0-9]{6}$/.test(otp)) {
+      setError('Ingresa exactamente seis dígitos.');
+      otpRef.current?.focus();
+      return;
+    }
     locked.current = true; setBusy(true); setError('');
     try {
       const result = await authorizedFetch<TransferResponse>(`/transfers/${encodeURIComponent(id)}/confirm`, {
@@ -39,6 +45,7 @@ export function TransferOtpPage() {
       } else { await status.refetch(); setError('La transferencia sigue pendiente; consulta su estado.'); }
     } catch (cause) {
       setError(cause instanceof ApiError ? `${cause.message} (${cause.code})` : 'No se confirmó el resultado. Consulta el estado.');
+      otpRef.current?.focus();
       // If the request was applied but the network reply failed, reconcile with GET.
       await status.refetch();
     } finally { locked.current = false; setBusy(false); }
@@ -56,8 +63,8 @@ export function TransferOtpPage() {
       <p className="inline-note">Código de demostración configurado en el backend local. Nunca utilices un OTP real en este entorno.</p>
       <form className="form-grid" onSubmit={event => void submit(event)} noValidate>
         <label htmlFor="tr-otp">Código OTP de 6 dígitos</label>
-        <input id="tr-otp" inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={otp} onChange={event => setOtp(event.target.value.replace(/[^0-9]/g, ''))}/>
-        {error && <p role="alert" className="banner-error">{error}</p>}
+        <input ref={otpRef} id="tr-otp" aria-invalid={!!error} aria-describedby={error ? 'tr-otp-error' : undefined} inputMode="numeric" autoComplete="one-time-code" maxLength={6} value={otp} onChange={event => setOtp(event.target.value.replace(/[^0-9]/g, ''))}/>
+        {error && <p id="tr-otp-error" role="alert" className="banner-error">{error}</p>}
         <button type="submit" className="btn-primary" disabled={busy}>{busy ? 'Verificando…' : 'Confirmar OTP'}</button>
       </form>
     </div>}
