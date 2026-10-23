@@ -772,3 +772,51 @@ La aprobación del workflow en la rama de trabajo no sustituye una ejecución ve
 La revisión de vulnerabilidades npm y el despliegue productivo permanecen fuera del alcance de T-31.
 
 **Resultado:** integración continua funcional y validada en rama; pendiente cierre formal tras merge y verificación exitosa sobre `main`.
+
+## T-32 — Documentación, reproducibilidad y preparación de entrega
+
+**Fecha:** 23 de octubre de 2026
+
+**Herramienta de IA:** ChatGPT (GPT-6)
+
+**Estado:** Desarrollo y validaciones completados; cierre de entrega sujeto a evidencia de demostración.
+
+### Objetivo
+
+Preparar la entrega técnica de Treo Wallet mediante documentación reproducible, guía de demostración, trazabilidad de requisitos y verificación final del repositorio.
+
+### Implementación
+
+- Actualización del `README.md` con instrucciones de instalación, configuración, migraciones, ejecución, pruebas y documentación de API.
+- Elaboración de `docs/demo-5min.md` para la demostración de funcionalidades web y móvil.
+- Incorporación de `docs/delivery-checklist.md` para controlar los requisitos de entrega.
+- Elaboración de `docs/technical-defense.md` para justificar las decisiones arquitectónicas y financieras.
+- Incorporación de `scripts/t32-delivery-audit.mjs` para verificar estructura documental, trazabilidad Git y archivos sensibles.
+
+### Validación
+
+- Auditoría documental: 0 errores y una advertencia esperada por cambios pendientes de commit.
+- Repositorio clonado desde GitHub en una carpeta independiente, commit `d5b144d`.
+- Instalación reproducible mediante `npm ci`: 1,138 paquetes instalados correctamente.
+- ESLint, TypeScript y contratos OpenAPI: aprobados.
+- Web: 43/43 pruebas aprobadas y compilación Vite exitosa.
+- Móvil: 41/41 pruebas de lógica y 9/9 pruebas de interfaz aprobadas.
+- Integración continua T-31: tres trabajos de GitHub Actions reportados como aprobados.
+- Funcionamiento de la aplicación: comprobado manualmente por el desarrollador.
+
+### Uso de inteligencia artificial
+
+La IA participó en la estructuración de la documentación, elaboración del guion de demostración, revisión de los criterios de entrega y preparación de la auditoría.
+
+El desarrollador verificó la instalación independiente, ejecutó los comandos de validación y revisó los resultados obtenidos.
+
+### Limitaciones identificadas
+
+- `npm ci` reportó siete vulnerabilidades en dependencias: dos moderadas y cinco altas, pendientes de clasificación y remediación.
+- Se registraron advertencias por dependencias obsoletas y un script opcional de `fsevents` bloqueado.
+- El despliegue AWS es una propuesta arquitectónica y no fue ejecutado.
+- La demostración grabada debe verificarse antes de declarar la entrega completa.
+
+### Resultado
+
+Documentación y validaciones técnicas preparadas para la entrega de Treo Wallet. El cierre formal requiere incorporar la evidencia de demostración, integrar T-32 en `main` y confirmar el resultado final de CI.
