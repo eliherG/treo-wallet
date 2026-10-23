@@ -7,8 +7,10 @@
     "dev": "expo start --lan",
     "lint": "eslint . --max-warnings=0",
     "typecheck": "tsc --project tsconfig.json --noEmit",
-    "test": "tsx --test src/auth/tests/*.test.ts src/features/tests/*.test.ts src/features/transfers/tests/*.test.ts",
-    "start": "expo start --lan"
+    "test": "npm run test:logic && npm run test:ui",
+    "start": "expo start --lan",
+    "test:logic": "tsx --test src/auth/tests/*.test.ts src/features/tests/*.test.ts src/features/transfers/tests/*.test.ts src/features/security/tests/t29.test.ts",
+    "test:ui": "jest --config jest-t29.config.cjs --runInBand --no-coverage"
   },
   "main": "index.ts",
   "dependencies": {
@@ -25,8 +27,13 @@
     "react-native-screens": "~4.26.0"
   },
   "devDependencies": {
+    "@testing-library/react-native": "^13.3.3",
+    "@types/jest": "^29.5.14",
     "@types/node": "^22.20.5",
     "@types/react": "~19.2.4",
+    "jest": "^29.7.0",
+    "jest-expo": "~57.0.0",
+    "react-test-renderer": "^19.2.3",
     "tsx": "^4.23.15"
   }
 }
