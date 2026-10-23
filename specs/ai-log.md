@@ -519,3 +519,70 @@ Las propuestas generadas fueron sometidas a revisión y ejecución local. La IA 
 T-27 implementado y validado funcionalmente. La aplicación móvil incorpora consultas financieras autenticadas sobre los endpoints existentes, sin introducir modificaciones en la lógica transaccional del backend.
 
 **Pendiente al momento de esta entrada:** completar la regresión web, ejecutar Expo Doctor y confirmar la integración en la rama principal.
+
+## T-28 — Transferencias móviles, idempotencia y privacidad
+
+**Fecha:** 23 de octubre de 2026
+
+**Herramienta:** ChatGPT (GPT-6)
+
+**Cobertura:** RF-06, RF-08, RF-10, RF-12, RF-13, RNF-09
+
+**Estado:** Implementación y validación funcional completadas.
+
+### Objetivo
+
+Implementar el flujo de transferencias financieras en React Native, reutilizando la API transaccional, la autenticación móvil y los contratos OpenAPI existentes. Garantizar el tratamiento seguro de operaciones pendientes, confirmadas e inciertas, evitando duplicaciones ante fallos de red.
+
+### Implementación
+
+- Incorporación de una pantalla nativa para seleccionar cuenta de origen, destinatario, importe, concepto y referencia.
+- Soporte para transferencias entre cuentas propias y hacia beneficiarios internos autorizados.
+- Validación monetaria exacta mediante `bigint`, sin redondeos de punto flotante.
+- Revisión explícita de los datos antes de confirmar una transferencia.
+- Generación de UUIDv4 mediante `expo-crypto` para identificar cada intención de transferencia.
+- Persistencia de la intención y su llave idempotente en `expo-secure-store` antes de transmitir la solicitud.
+- Recuperación ante respuestas inciertas y errores de red mediante reutilización de la misma intención o consulta del folio existente.
+- Integración del flujo OTP para operaciones que requieren confirmación adicional.
+- Presentación de comprobantes únicamente cuando el backend confirma el estado `COMPLETED`.
+- Incorporación de una cobertura visual al pasar la aplicación a segundo plano como mitigación de privacidad.
+
+### Incidencias y correcciones
+
+Durante la integración se identificaron dos incompatibilidades menores:
+
+- Una referencia a la regla `react-hooks/exhaustive-deps` no disponible en la configuración actual de ESLint.
+- Uso de `StyleSheet.absoluteFillObject`, propiedad no reconocida por los tipos instalados de React Native.
+
+Se corrigieron ambas referencias sin modificar el comportamiento del motor de transferencias. Posteriormente se ejecutaron nuevamente las verificaciones automatizadas, sin detectar regresiones.
+
+### Uso de inteligencia artificial
+
+Se utilizó IA para revisar los contratos API, diseñar el flujo de transferencias, implementar la gestión de estados transaccionales, definir la persistencia idempotente y desarrollar pruebas automatizadas.
+
+La revisión humana incluyó ejecución de pruebas, diagnóstico de errores de integración y validación funcional mediante Xcode y el simulador iPhone 17.
+
+### Validaciones y resultados
+
+- **Pruebas móviles:** 35/35 aprobadas, incluyendo 16 nuevas pruebas de T-28.
+- **ESLint:** aprobado sin errores ni advertencias.
+- **TypeScript:** comprobación correcta en todos los workspaces.
+- **OpenAPI:** contratos y tipos generados verificados.
+- **Regresión web y Expo Doctor:** verificaciones finales reportadas como completadas durante la integración.
+- **Simulador iPhone 17:** validación funcional reportada como satisfactoria.
+
+La cobertura automatizada incluye doble envío, recuperación tras pérdida de respuesta, persistencia de operaciones durante reinicios, confirmación OTP, recuperación por folio y tratamiento de estados no terminales.
+
+### Consideraciones y limitaciones
+
+La aplicación conserva una intención de transferencia incierta para evitar generar inadvertidamente una operación distinta. Las pérdidas de respuesta posteriores a un commit se verificaron mediante pruebas automatizadas; una desconexión manual no garantiza reproducir exactamente ese escenario.
+
+La cobertura de privacidad mediante `AppState` constituye una mitigación visual y no garantiza la protección nativa frente a capturas o snapshots de iOS.
+
+Las vulnerabilidades de dependencias identificadas previamente mediante npm continúan pendientes de evaluación independiente.
+
+### Resultado
+
+T-28 implementado y validado. La aplicación móvil permite realizar transferencias autenticadas, gestionar confirmaciones OTP y recuperar operaciones inciertas utilizando el motor financiero existente, sin modificaciones en PostgreSQL ni en la API.
+
+El entregable queda preparado para su integración en la rama principal.

@@ -4,6 +4,7 @@ import type { MobileCredentials, MobileUser } from './types';
 import { secureTokenStorage } from './secure-store';
 import { createAuthTransport } from '../api/auth-api';
 import { createAuthorizedGet, type AuthorizedGet } from '../api/authorized-get';
+import { createAuthorizedPost, type AuthorizedPost } from '../api/authorized-post';
 
 type Session = {
   user: MobileUser | null;
@@ -11,6 +12,7 @@ type Session = {
   login(input: MobileCredentials): Promise<void>;
   logout(): Promise<void>;
   authorizedGet: AuthorizedGet;
+  authorizedPost: AuthorizedPost;
 };
 
 const Context = createContext<Session | null>(null);
@@ -20,6 +22,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<MobileUser | null>(null);
   const [ready, setReady] = useState(false);
   const authorizedGet = useMemo(() => createAuthorizedGet(controller, () => setUser(null)), [controller]);
+  const authorizedPost = useMemo(() => createAuthorizedPost(controller, () => setUser(null)), [controller]);
 
   useEffect(() => {
     let current = true;
@@ -31,7 +34,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   }, [controller]);
 
   const value: Session = {
-    user, ready, authorizedGet,
+    user, ready, authorizedGet, authorizedPost,
     login: async input => { const next = await controller.login(input); setUser(next); },
     logout: async () => { await controller.logout(); setUser(null); },
   };
