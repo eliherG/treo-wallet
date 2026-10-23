@@ -29,7 +29,9 @@
     "test:transfers:status": "tsx --test src/modules/transfers/tests/t17.integration.test.ts",
     "db:seed": "tsx src/database/seeds/t20-seed.ts --confirm-dev-seed",
     "db:explain": "tsx src/database/seeds/t20-explain.ts --confirm-dev-explain",
-    "test:seed": "tsx --test src/database/tests/t20.seed.test.ts"
+    "test:seed": "tsx --test src/database/tests/t20.seed.test.ts",
+    "test:financial:integrity": "tsx --test src/modules/transfers/tests/t19.integrity.integration.test.ts",
+    "test:financial:stress": "tsx --test src/modules/transfers/tests/t19.stress.integration.test.ts"
   },
   "dependencies": {
     "argon2": "0.45.1",

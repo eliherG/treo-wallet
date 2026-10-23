@@ -339,3 +339,20 @@
 - **Regresión acumulada:** pendiente de incorporar el resultado verificado.
 - **Revisión humana:** ejecución de pruebas y control de commits por el desarrollador.
 - **Estado:** implementación verificada en pruebas específicas; regresión y cierre de Git pendientes.
+
+## T-19 — Integridad financiera y concurrencia
+
+- **Herramienta:** ChatGPT (GPT-6).
+- **Objetivo:** verificar la integridad financiera bajo concurrencia real conforme a RF-06, RF-09, RF-13, RF-14 y RNF-07.
+- **Implementación:** suite de integración PostgreSQL con escenarios de concurrencia, idempotencia, saldo insuficiente, límite diario, transferencias cruzadas, OTP, auditoría y rollback.
+- **Problema detectado:** el escenario de transferencias cruzadas falló inicialmente con 59 operaciones rechazadas. Se identificó como causa probable una interacción entre bloqueos de claves foráneas y bloqueos explícitos `FOR UPDATE`.
+- **Corrección:** reorganización de la adquisición de bloqueos en el servicio financiero, antes de insertar la intención de transferencia. Se conservaron las restricciones de integridad existentes.
+- **Validación de la corrección:** repetición de la suite de estrés con cinco escenarios aprobados y ninguna prueba fallida.
+- **Evidencia de concurrencia:** 452 solicitudes distribuidas entre competición por saldo, idempotencia, límite diario, transferencias cruzadas y confirmación OTP.
+- **Resultados:** 60 transferencias completadas y 60 rechazadas por saldo; un único movimiento para 120 reintentos; 100 operaciones completadas y 20 rechazadas por límite; 60 transferencias cruzadas completadas; una sola contabilización para 32 confirmaciones OTP.
+- **Pruebas:** 6 pruebas de integridad y 5 pruebas de estrés aprobadas, 0 fallidas.
+- **Verificaciones:** ESLint, TypeScript y sincronización OpenAPI satisfactorios.
+- **Seguridad de pruebas:** las operaciones de estrés generaron movimientos sintéticos persistentes en `treo_test`; se conservaron las protecciones de inmutabilidad del ledger.
+- **Limitación:** el escenario inicial es compatible con un problema de bloqueos, pero no se conservó el código SQLSTATE individual para certificar la causa exacta. Tampoco se simuló una confirmación OTP atravesando medianoche con el reloj de PostgreSQL.
+- **Regresión general:** pendiente de incorporar el resultado final.
+- **Revisión humana:** pruebas ejecutadas y cambios controlados manualmente por el desarrollador.
