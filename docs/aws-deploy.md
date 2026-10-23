@@ -1,7 +1,7 @@
 # Treo Wallet — Propuesta de despliegue productivo en AWS
 
-**Tarea:** T-30 · **Requisito:** RNF-11 · **Versión documental:** 1.0 · **Fecha:** 2026-10-23
-**Estado:** arquitectura propuesta, **no desplegada, no probada ni certificada**.
+**Tarea:** T-30 · **Requisito:** RNF-11 · **Versión documental:** 1.1 · **Fecha:** 2026-10-23
+**Estado:** arquitectura AWS propuesta, **no desplegada ni certificada**; integración continua T-31 implementada y validada en rama.
 **Fuentes internas:** `specs/treo-assessment-original.md` (Fase 4), `specs/requirements.md` v0.3, `specs/design.md`, `specs/openapi.json` y `specs/tasks.md`.
 
 > **Alcance:** responde al ejercicio de arquitectura para una eventual operación financiera regulada; Treo Wallet **hoy es una simulación en MXN**. No procesa SPEI, dinero real ni KYC. Este documento no constituye un diseño aprobado por un área de seguridad, cumplimiento o continuidad de negocio. **T-30 no crea recursos ni ejecuta despliegues AWS.** Los valores de SLO, RPO, RTO y retención son **objetivos propuestos**, sujetos a aprobación y pruebas.
@@ -72,7 +72,7 @@ flowchart TB
   CICD -.->|assets web versionados| S3
 ```
 
-**Lectura del diagrama:** CloudFront entrega **únicamente activos estáticos web**; las rutas API permanecen sin caché y terminan en ALB. El texto `api.treo.example` es ilustrativo, **no es un dominio real**. La BD es privada, sin IP pública, y el standby no es una réplica de lectura general: su papel inicial es failover. CloudTrail audita **acciones AWS**, no sustituye `audit_events` de la aplicación. Las flechas de CI/CD y la migración son pasos **propuestos**, no automatizaciones ya existentes.
+**Lectura del diagrama:** CloudFront entrega **únicamente activos estáticos web**; las rutas API permanecen sin caché y terminan en ALB. El texto `api.treo.example` es ilustrativo, **no es un dominio real**. La BD es privada, sin IP pública, y el standby no es una réplica de lectura general: su papel inicial es failover. CloudTrail audita **acciones AWS**, no sustituye `audit_events` de la aplicación. Las flechas de GitHub Actions hacia AWS (ECR, ECS, S3) y la migración de producción representan **CD futuro propuesto**, no automatizaciones ya existentes; T-31 implementa únicamente **CI de pruebas**, sin acceso ni despliegue a AWS.
 
 **Networking:** ALB en subredes públicas con certificados ACM y redirección HTTP→HTTPS; tasks ECS en subredes privadas, `assignPublicIp=false`; RDS en subredes de datos privadas, sin acceso directo desde Internet. `security groups`: entrada ALB 443 desde red pública/WAF; ECS puerto API **solo** desde SG de ALB; RDS TCP 5432 **solo** desde SG ECS y SG temporal de migraciones. Tráfico saliente restringido según dependencias; preferir VPC endpoints para ECR/S3/CloudWatch/Secrets Manager cuando el análisis costo/seguridad lo justifique; NAT únicamente donde sea necesario. TLS también hacia PostgreSQL, usando validación de certificado.
 
@@ -155,7 +155,21 @@ El código Expo/React Native se prepara en un **build nativo de distribución** 
 
 ## 8. CI/CD, identidades y entornos
 
-**No está implementado en T-30.** El pipeline de comprobaciones del monorepo corresponde a **T-31**; esta sección describe el eventual pipeline de despliegue, no un workflow presente.
+### 8.1 Integración continua implementada y validada en rama — T-31
+
+El workflow **`.github/workflows/ci.yml`** implementa CI sobre `push`, `pull_request` hacia `main` y `workflow_dispatch`. Se ejecuta en **Ubuntu 24.04**, con **Node.js 24.19.0**, **npm 12.0.2** e instalación limpia por `npm ci` a partir del lockfile. Los trabajos son independientes:
+
+- **API · PostgreSQL 16:** instancia efímera PostgreSQL 16, inicialización de roles y bases con `db/init/01-bootstrap.sh`, migraciones TypeORM sobre `treo_test`, `lint`, `typecheck`, `check:types` y **17 suites API** mediante `scripts/ci-run-api-tests.mjs`.
+- **Web · tests and build:** **43 pruebas Vitest** y compilación de los recursos React/Vite.
+- **Mobile · logic and UI:** **41 pruebas de lógica** y **9 de interfaz** React Native/Jest (total **50**) más `expo install --check` con Expo SDK 57.
+
+**Evidencia:** las tres tareas de GitHub Actions fueron reportadas **en verde en la rama `ci/t-31-github-actions`** después de corregir una espera asíncrona en la prueba visual de transferencias y alinear el origen CORS de CI con la prueba HTTP. La validación de `main` posterior al merge es **pendiente** hasta disponer de un run verde de esa rama. Los comandos y resultados locales se documentan en `docs/ci.md` y `specs/ai-log.md`; no se inventa URL ni SHA de la ejecución.
+
+**Seguridad y límites:** el workflow utiliza permisos de GitHub **`contents: read`** y checkout sin credenciales persistentes, con contraseñas **ficticias exclusivas de CI** para la base efímera. No utiliza credenciales AWS, `id-token: write`, secretos de producción, ni publica contenedores o artefactos. Se excluyen el estrés persistente T-19 y la generación masiva T-20 de las verificaciones recurrentes; su ejecución queda separada.
+
+### 8.2 Entrega y despliegue continuo hacia AWS — propuesta, no implementada
+
+Lo siguiente describe una **evolución hipotética** del pipeline: no son pasos que ejecute hoy `.github/workflows/ci.yml`.
 
 1. **PR:** instalar desde lockfile (`npm ci`), lint, typecheck, OpenAPI `--check`, pruebas API+PostgreSQL, web y móvil, análisis de dependencias/imagen e IaC. No otorgar acceso a secretos prod ni desplegar desde PR sin confianza.
 2. **Merge a `main`:** build web y contenedor backend versionados por SHA/digest, push a ECR y almacenamiento estático de artefactos; ejecutar smoke/integración en `dev` sin credenciales productivas.
@@ -212,7 +226,7 @@ El código Expo/React Native se prepara en un **build nativo de distribución** 
 | Web: S3+CloudFront vs Amplify Hosting | §6 | Cubierto |
 | Móvil: distribución EAS/tiendas y conexión segura | §6 | Cubierto |
 | Observabilidad: CloudWatch, X-Ray/OpenTelemetry, CloudTrail, auditoría y retención | §7 | Cubierto; retenciones por aprobar |
-| CI/CD: GitHub Actions OIDC, dev/staging/prod | §8 | Cubierto como propuesta; T-31 pendiente |
+| CI/CD: GitHub Actions OIDC, dev/staging/prod | §8 | CI T-31 implementado, tres jobs verdes en rama; validación de `main` pendiente. CD AWS/OIDC/entornos productivos solo propuesto |
 | Pregunta: conexiones a PostgreSQL, pool y RDS Proxy | §5 | Cubierto |
 | Pregunta: ¿qué cambiaría con volumen 100×? | §9 | Cubierto |
 | Pregunta: IaC CDK, Terraform o SAM | §10 | Cubierto |
@@ -232,4 +246,4 @@ El código Expo/React Native se prepara en un **build nativo de distribución** 
 
 ---
 
-**Criterio de aceptación de T-30:** documento en el repositorio en `docs/aws-deploy.md`, Mermaid legible, las seis filas y las tres preguntas adicionales respondidas, objetivos distinguibles de mediciones y ausencia de despliegue real. El estado `DONE` y commit SHA se registran **después** de la revisión humana, commit y merge, no en este archivo.
+**Estado documental:** T-30 fue revisado e integrado; esta versión 1.1 incorpora la evidencia de CI de T-31 en la rama de trabajo. El cierre de T-31 requiere el merge y una ejecución verde de GitHub Actions sobre `main`. La infraestructura AWS y el despliegue continuo no se han implementado.

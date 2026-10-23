@@ -1,0 +1,132 @@
+name: Treo Wallet CI
+
+on:
+  push:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# No write permissions, credentials or access to cloud deployments.
+permissions:
+  contents: read
+
+concurrency:
+  group: treo-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  api:
+    name: API · PostgreSQL 16
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      CI: 'true'
+      NODE_ENV: test
+      DB_HOST: 127.0.0.1
+      DB_PORT: '5432'
+      DB_NAME: treo_dev
+      DB_TEST_NAME: treo_test
+      TREO_APP_PASSWORD: ci-app-password-not-for-any-other-environment
+      TREO_MIGRATOR_PASSWORD: ci-migrator-password-not-for-any-other-environment
+      JWT_ACCESS_SECRET: ci-only-jwt-access-secret-not-for-production-2026
+      TREO_DEMO_OTP: '135790'
+      TREO_OTP_HMAC_SECRET: ci-only-otp-hmac-secret-not-for-production-2026
+      WEB_ORIGIN: http://localhost:5173
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_DB: postgres
+          POSTGRES_PASSWORD: ci-postgres-password-not-for-other-environments
+          TREO_APP_PASSWORD: ci-app-password-not-for-any-other-environment
+          TREO_MIGRATOR_PASSWORD: ci-migrator-password-not-for-any-other-environment
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres -d postgres"
+          --health-interval=5s
+          --health-timeout=3s
+          --health-retries=20
+    steps:
+      - name: Checkout (read only)
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Node 24
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24.19.0'
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - name: Match development npm major
+        run: npm install --global npm@12.0.2
+      - name: Reproducible dependencies
+        run: npm ci
+      - name: Bootstrap roles and test databases from existing script
+        env:
+          PG_SERVICE_ID: ${{ job.services.postgres.id }}
+        run: |
+          set -euo pipefail
+          test -n "$PG_SERVICE_ID"
+          docker cp db/init/01-bootstrap.sh "$PG_SERVICE_ID:/tmp/treo-01-bootstrap.sh"
+          docker exec --user postgres "$PG_SERVICE_ID" bash /tmp/treo-01-bootstrap.sh
+      - name: Apply TypeORM migrations to treo_test
+        run: npm run db:migrate -w @treo/api -- --test
+      - name: Lint the monorepo
+        run: npm run lint
+      - name: Typecheck all workspaces
+        run: npm run typecheck
+      - name: Verify generated OpenAPI types
+        run: npm run check:types
+      - name: API unit and PostgreSQL integration suites (excluding persistent stress)
+        run: node scripts/ci-run-api-tests.mjs
+
+  web:
+    name: Web · tests and build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout (read only)
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Node 24
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24.19.0'
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - name: Match development npm major
+        run: npm install --global npm@12.0.2
+      - name: Reproducible dependencies
+        run: npm ci
+      - name: Web tests (Vitest)
+        run: npm run test -w @treo/web
+      - name: Production web build
+        run: npm run build -w @treo/web
+
+  mobile:
+    name: Mobile · logic and UI
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Checkout (read only)
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Node 24
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24.19.0'
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - name: Match development npm major
+        run: npm install --global npm@12.0.2
+      - name: Reproducible dependencies
+        run: npm ci
+      - name: Mobile logic and React Native UI tests
+        run: npm run test -w @treo/mobile
+      - name: Confirm compatibility with installed Expo SDK
+        working-directory: mobile
+        run: npx expo install --check

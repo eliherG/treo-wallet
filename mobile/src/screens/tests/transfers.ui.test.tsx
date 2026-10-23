@@ -37,7 +37,7 @@ const receipt = {
 };
 
 async function fillAndReview(amount = '1.25') {
-  await waitFor(() => expect(screen.getByLabelText('Importe MXN')).toBeTruthy());
+  await screen.findByLabelText('Importe MXN', {}, { timeout: 10_000 });
   fireEvent.press(screen.getByText('Cuenta **************0022'));
   fireEvent.changeText(screen.getByLabelText('Importe MXN'), amount);
   fireEvent.changeText(screen.getByLabelText('Concepto'), 'Móvil');
@@ -59,7 +59,7 @@ beforeEach(() => {
 describe('T-29 · Flujos visuales de transferencias', () => {
   it('impide enviar montos inválidos desde la pantalla', async () => {
     render(<TransferScreen />);
-    await waitFor(() => expect(screen.getByLabelText('Importe MXN')).toBeTruthy());
+    await screen.findByLabelText('Importe MXN', {}, { timeout: 10_000 });
     fireEvent.changeText(screen.getByLabelText('Importe MXN'), '1.234');
     expect(screen.getByRole('button', { name: 'Revisar transferencia' }).props.accessibilityState?.disabled).toBe(true);
     expect(mockPost).not.toHaveBeenCalled();
