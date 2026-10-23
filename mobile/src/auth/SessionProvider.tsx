@@ -3,12 +3,14 @@ import { MobileAuthController } from './controller';
 import type { MobileCredentials, MobileUser } from './types';
 import { secureTokenStorage } from './secure-store';
 import { createAuthTransport } from '../api/auth-api';
+import { createAuthorizedGet, type AuthorizedGet } from '../api/authorized-get';
 
 type Session = {
   user: MobileUser | null;
   ready: boolean;
   login(input: MobileCredentials): Promise<void>;
   logout(): Promise<void>;
+  authorizedGet: AuthorizedGet;
 };
 
 const Context = createContext<Session | null>(null);
@@ -17,6 +19,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const controller = useMemo(() => new MobileAuthController(secureTokenStorage, createAuthTransport()), []);
   const [user, setUser] = useState<MobileUser | null>(null);
   const [ready, setReady] = useState(false);
+  const authorizedGet = useMemo(() => createAuthorizedGet(controller, () => setUser(null)), [controller]);
 
   useEffect(() => {
     let current = true;
@@ -28,7 +31,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   }, [controller]);
 
   const value: Session = {
-    user, ready,
+    user, ready, authorizedGet,
     login: async input => { const next = await controller.login(input); setUser(next); },
     logout: async () => { await controller.logout(); setUser(null); },
   };

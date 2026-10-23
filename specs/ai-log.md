@@ -477,3 +477,45 @@ La revisión humana incluyó la ejecución de pruebas automatizadas, verificaci�
 - Queda pendiente el cierre del entregable mediante commit y merge a la rama principal.
 
 **Resultado:** autenticación móvil funcional, dependencias compatibles con Expo SDK 57 y pruebas automatizadas aprobadas, sin regresiones detectadas en el cliente web.
+
+## T-27 — Cuentas, movimientos y beneficiarios móviles
+
+**Fecha:** 23 de octubre de 2026  
+**Herramienta:** ChatGPT (GPT-6)  
+**Cobertura:** RF-03, RF-04, RF-05 y RF-11  
+**Estado:** Implementación funcional y validación móvil completadas.
+
+### Objetivo
+
+Incorporar las primeras funcionalidades financieras de consulta a la aplicación React Native, reutilizando los servicios backend y la autenticación segura implementados anteriormente.
+
+### Implementación
+
+- Consulta de cuentas propias y visualización de saldos en MXN.
+- Representación monetaria exacta a partir de cantidades expresadas en centavos, evitando errores de precisión de punto flotante.
+- Consulta y presentación de los últimos 20 movimientos financieros.
+- Consulta y selección de beneficiarios previamente registrados.
+- Protección de información financiera mediante CLABE enmascarada.
+- Estados de carga, listas vacías, errores y reintentos.
+- Reutilización de la sesión móvil y renovación del access token ante respuestas HTTP 401.
+
+### Uso de inteligencia artificial
+
+Se utilizó IA para estructurar los componentes móviles, integrar los contratos OpenAPI existentes, implementar la lógica de consulta y diseñar pruebas unitarias de los escenarios funcionales y de error.
+
+Las propuestas generadas fueron sometidas a revisión y ejecución local. La IA no sustituyó la comprobación manual de la aplicación.
+
+### Validación
+
+- 19/19 pruebas móviles aprobadas, incluyendo las 7 pruebas previas de T-26 y 12 nuevas de T-27.
+- ESLint sin errores ni advertencias.
+- TypeScript aprobado en todos los workspaces.
+- Contratos OpenAPI verificados.
+- Ejecución funcional en simulador iPhone 17.
+- Comprobación manual satisfactoria de cuentas, saldos, movimientos, beneficiarios y funcionamiento general de la aplicación.
+
+### Resultado
+
+T-27 implementado y validado funcionalmente. La aplicación móvil incorpora consultas financieras autenticadas sobre los endpoints existentes, sin introducir modificaciones en la lógica transaccional del backend.
+
+**Pendiente al momento de esta entrada:** completar la regresión web, ejecutar Expo Doctor y confirmar la integración en la rama principal.
