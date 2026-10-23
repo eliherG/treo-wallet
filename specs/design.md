@@ -305,17 +305,97 @@ LIMIT :page_size_plus_one;
 - Índice candidato: `CREATE INDEX idx_ledger_account_time_id ON ledger_entries (account_id, created_at DESC, id DESC);` y medición de otros índices de acuerdo con el plan real.
 - **Pendiente de ejecución (obligatorio para Treo):** generar al menos **100,000 asientos de movimiento** con seed reproducible, ejecutar `EXPLAIN (ANALYZE, BUFFERS)` con consulta representativa y filtros, copiar **salida real** y tiempos/índices observados aquí antes de entregar. No se inventa plan ni latencia.
 
-### 5.1 Plantilla de evidencia pendiente
+### 5.1 Evidencia real de rendimiento — T-20
+
+**Fecha:** 2026-10-22.
+**Entorno:** PostgreSQL local de desarrollo.
+**Dataset:** 50,000 transferencias COMPLETED, 100,000 movimientos.
+**Integridad:** 50,000 DEBIT, 50,000 CREDIT, neto contable cero.
+**Fecha de negocio:** 2026-01-15, America/Mexico_City.
+
+#### Resultados medidos
+
+- Cuenta y fecha: 0.941 ms; Index Scan mediante
+  idx_ledger_entries_account_time_id; 89 accesos a buffers.
+- Solo propietario: 223.650 ms; Seq Scan de 100,000 movimientos,
+  100,000 busquedas por PK y 301,243 accesos a buffers.
+- Ambas consultas devolvieron 21 filas.
+
+#### Interpretacion
+
+El indice existente funciona eficientemente con filtros de cuenta
+y fecha. La consulta global por propietario procesa demasiadas
+filas antes de LIMIT y presenta una oportunidad de optimizacion.
+Los tiempos provienen de una medicion local con datos en cache;
+no representan latencia HTTP ni rendimiento de produccion.
+
+#### Salida original de PostgreSQL
 
 ```text
-Estado: NO EJECUTADO
-PostgreSQL: pendiente
-Volumen seed: pendiente (objetivo >= 100,000 movimientos)
-Consulta / parámetros: pendiente
-EXPLAIN (ANALYZE, BUFFERS): pendiente (pegar resultado real)
-Plan elegido e índices efectivos: pendiente
-Tiempo observado: pendiente
-Interpretación / ajuste: pendiente
+### T-20 EXPLAIN: account-filtered
+
+Rows in seed: 100000, filter: {"userId":"c825333b-b1d7-5aad-8b5d-76ef271f2041","accountId":"3f3dff73-ad7c-539f-92fa-171768bdf936","from":"2026-01-15","to":"2026-01-15","limit":21}
+Limit  (cost=0.86..12.24 rows=21 width=128) (actual time=0.254..0.519 rows=21 loops=1)
+  Buffers: shared hit=89
+  ->  Nested Loop  (cost=0.86..26920.65 rows=49688 width=128) (actual time=0.253..0.516 rows=21 loops=1)
+        Buffers: shared hit=89
+        ->  Nested Loop  (cost=0.56..8330.29 rows=49688 width=70) (actual time=0.058..0.077 rows=21 loops=1)
+              Buffers: shared hit=26
+              ->  Index Scan using idx_ledger_entries_account_time_id on ledger_entries le  (cost=0.42..7701.02 rows=49688 width=70) (actual time=0.037..0.045 rows=21 loops=1)
+                    Index Cond: ((account_id = '3f3dff73-ad7c-539f-92fa-171768bdf936'::uuid) AND (created_at >= '2026-01-15 06:00:00+00'::timestamp with time zone) AND (created_at < '2026-01-16 06:00:00+00'::timestamp with time zone))
+                    Buffers: shared hit=24
+              ->  Materialize  (cost=0.15..8.17 rows=1 width=16) (actual time=0.001..0.001 rows=1 loops=21)
+                    Buffers: shared hit=2
+                    ->  Index Scan using accounts_pkey on accounts a  (cost=0.15..8.17 rows=1 width=16) (actual time=0.017..0.018 rows=1 loops=1)
+                          Index Cond: (id = '3f3dff73-ad7c-539f-92fa-171768bdf936'::uuid)
+                          Filter: (user_id = 'c825333b-b1d7-5aad-8b5d-76ef271f2041'::uuid)
+                          Buffers: shared hit=2
+        ->  Memoize  (cost=0.30..0.47 rows=1 width=42) (actual time=0.011..0.011 rows=1 loops=21)
+              Cache Key: le.transfer_id
+              Cache Mode: logical
+              Hits: 0  Misses: 21  Evictions: 0  Overflows: 0  Memory Usage: 4kB
+              Buffers: shared hit=63
+              ->  Index Scan using transfers_pkey on transfers t  (cost=0.29..0.46 rows=1 width=42) (actual time=0.010..0.010 rows=1 loops=21)
+                    Index Cond: (id = le.transfer_id)
+                    Buffers: shared hit=63
+Planning:
+  Buffers: shared hit=113
+Planning Time: 1.134 ms
+Execution Time: 0.941 ms
+
+### T-20 EXPLAIN: owner-only
+
+Rows in seed: 100000, filter: {"userId":"c825333b-b1d7-5aad-8b5d-76ef271f2041","accountId":null,"from":null,"to":null,"limit":21}
+Limit  (cost=2693.65..2693.70 rows=21 width=128) (actual time=223.596..223.600 rows=21 loops=1)
+  Buffers: shared hit=301243
+  ->  Sort  (cost=2693.65..2694.76 rows=444 width=128) (actual time=223.595..223.598 rows=21 loops=1)
+        Sort Key: le.created_at DESC, le.id DESC
+        Sort Method: top-N heapsort  Memory: 36kB
+        Buffers: shared hit=301243
+        ->  Nested Loop  (cost=9.82..2681.68 rows=444 width=128) (actual time=0.046..205.015 rows=100000 loops=1)
+              Buffers: shared hit=301237
+              ->  Hash Join  (cost=9.53..2509.54 rows=444 width=70) (actual time=0.027..26.545 rows=100000 loops=1)
+                    Hash Cond: (le.account_id = a.id)
+                    Buffers: shared hit=1237
+                    ->  Seq Scan on ledger_entries le  (cost=0.00..2235.03 rows=100003 width=70) (actual time=0.003..9.606 rows=100000 loops=1)
+                          Buffers: shared hit=1235
+                    ->  Hash  (cost=9.50..9.50 rows=2 width=16) (actual time=0.018..0.019 rows=2 loops=1)
+                          Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                          Buffers: shared hit=2
+                          ->  Bitmap Heap Scan on accounts a  (cost=4.16..9.50 rows=2 width=16) (actual time=0.016..0.017 rows=2 loops=1)
+                                Recheck Cond: (user_id = 'c825333b-b1d7-5aad-8b5d-76ef271f2041'::uuid)
+                                Heap Blocks: exact=1
+                                Buffers: shared hit=2
+                                ->  Bitmap Index Scan on idx_accounts_user_id  (cost=0.00..4.16 rows=2 width=0) (actual time=0.014..0.014 rows=2 loops=1)
+                                      Index Cond: (user_id = 'c825333b-b1d7-5aad-8b5d-76ef271f2041'::uuid)
+                                      Buffers: shared hit=1
+              ->  Index Scan using transfers_pkey on transfers t  (cost=0.29..0.38 rows=1 width=42) (actual time=0.001..0.001 rows=1 loops=100000)
+                    Index Cond: (id = le.transfer_id)
+                    Buffers: shared hit=300000
+Planning:
+  Buffers: shared hit=16
+Planning Time: 0.230 ms
+Execution Time: 223.650 ms
 ```
 
 ## 6. Identidad, seguridad y errores
