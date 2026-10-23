@@ -720,3 +720,55 @@ El documento no constituye una certificación de cumplimiento regulatorio ni acr
 T-30 completado a nivel documental. Se estableció una propuesta de despliegue AWS alineada con el monolito modular, la integridad financiera de PostgreSQL y los clientes web y móvil existentes.
 
 La implementación de integración continua corresponde a T-31 y la preparación de la entrega final a T-32.
+
+## T-31 — Integración continua en GitHub Actions
+
+**Fecha:** 23 de octubre de 2026
+
+**Herramienta de IA:** ChatGPT (GPT-6)
+
+**Cobertura:** RNF-07, RNF-08, RNF-09 y RNF-12; trazabilidad con RF-14.
+
+**Estado:** Workflow implementado y validado en la rama `ci/t-31-github-actions`; verificación posterior al merge en `main` pendiente.
+
+### Objetivo
+
+Automatizar la validación reproducible de API, web y móvil, con una base PostgreSQL 16 efímera para las pruebas de integración y sin credenciales o despliegues de AWS.
+
+### Implementación
+
+- Se incorporó `.github/workflows/ci.yml` con tres jobs independientes para API, web y móvil, activados por `push`, `pull_request` hacia `main` y ejecución manual.
+- Se utilizaron runners Ubuntu 24.04, Node.js 24.19.0, npm 12.0.2 y `npm ci`, con permisos mínimos `contents: read` y checkout sin credenciales persistentes.
+- El job API inicializa roles y bases PostgreSQL 16, aplica migraciones TypeORM sobre `treo_test` y ejecuta lint, TypeScript, OpenAPI y 17 suites API.
+- El job web ejecuta Vitest y la compilación Vite.
+- El job móvil ejecuta pruebas de lógica y componentes React Native/Jest, además de verificar la compatibilidad del SDK de Expo.
+- Se añadieron `scripts/ci-run-api-tests.mjs`, `scripts/configure-t31.mjs` y `docs/ci.md`; la política npm 12 autoriza de manera específica los scripts requeridos por `argon2` y `esbuild`.
+- El estrés persistente de T-19 y el seed masivo de T-20 se excluyeron deliberadamente del CI ordinario.
+
+### Incidencias y resolución
+
+- Una prueba visual móvil permanecía en el estado de recuperación de transferencias en el runner. Se ajustó su espera asíncrona para aguardar el formulario, sin modificar el flujo financiero de producción.
+- La prueba CORS T-08 esperaba `http://localhost:5173`, mientras el workflow utilizaba `http://127.0.0.1:5173`. Se alineó `WEB_ORIGIN` en CI con la expectativa del test, sin relajar la validación CORS.
+
+### Uso de inteligencia artificial y revisión
+
+Se utilizó IA para diseñar el workflow, comparar los scripts existentes, configurar el aislamiento de pruebas, revisar el principio de privilegio mínimo y diagnosticar las fallas de integración.
+
+El desarrollador ejecutó las validaciones locales, revisó los resultados del runner y confirmó los tres jobs verdes en GitHub Actions.
+
+### Evidencia y validación
+
+- **API:** 17/17 suites aprobadas localmente, incluyendo pruebas con PostgreSQL, ledger, atomicidad, auditoría, OTP e idempotencia.
+- **Web:** 43/43 pruebas y compilación Vite aprobadas localmente.
+- **Móvil:** 41/41 pruebas de lógica y 9/9 de interfaz aprobadas localmente.
+- **Controles estáticos:** ESLint, TypeScript y contratos OpenAPI aprobados localmente.
+- **GitHub Actions:** tres jobs reportados en verde en `ci/t-31-github-actions`, tras aplicar las correcciones anteriores.
+- **AWS:** no se crearon recursos, no se configuró OIDC hacia AWS y no se ejecutó despliegue continuo.
+
+### Limitaciones y pendientes
+
+La aprobación del workflow en la rama de trabajo no sustituye una ejecución verde en `main`. Se deberá registrar el SHA y enlace del run definitivo una vez efectuado el merge.
+
+La revisión de vulnerabilidades npm y el despliegue productivo permanecen fuera del alcance de T-31.
+
+**Resultado:** integración continua funcional y validada en rama; pendiente cierre formal tras merge y verificación exitosa sobre `main`.
