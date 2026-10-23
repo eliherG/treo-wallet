@@ -26,7 +26,10 @@
     "test:transfers:otp:integration": "tsx --test src/modules/transfers/tests/t16.integration.test.ts",
     "test:movements:unit": "tsx --test src/modules/movements/tests/cursor.test.ts",
     "test:movements:integration": "tsx --test src/modules/movements/tests/t18.integration.test.ts",
-    "test:transfers:status": "tsx --test src/modules/transfers/tests/t17.integration.test.ts"
+    "test:transfers:status": "tsx --test src/modules/transfers/tests/t17.integration.test.ts",
+    "db:seed": "tsx src/database/seeds/t20-seed.ts --confirm-dev-seed",
+    "db:explain": "tsx src/database/seeds/t20-explain.ts --confirm-dev-explain",
+    "test:seed": "tsx --test src/database/tests/t20.seed.test.ts"
   },
   "dependencies": {
     "argon2": "0.45.1",
