@@ -1,0 +1,10 @@
+import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { resolve } from 'node:path';
+const file = resolve('web/tsconfig.json');
+if (!existsSync(file)) throw new Error('No existe web/tsconfig.json; revisar monorepo primero.');
+const before = readFileSync(file, 'utf8');
+const config = JSON.parse(before);
+config.compilerOptions = { ...(config.compilerOptions ?? {}), module: 'ESNext', moduleResolution: 'Bundler', jsx: 'react-jsx', target: 'ES2022', lib: ['ES2022', 'DOM', 'DOM.Iterable'], types: ['vite/client', 'vitest/globals'] };
+config.include = ['src/**/*.ts', 'src/**/*.tsx'];
+writeFileSync(file, JSON.stringify(config, null, 2) + '\n');
+console.log('web/tsconfig.json: React JSX, browser libraries and Vite configured.');

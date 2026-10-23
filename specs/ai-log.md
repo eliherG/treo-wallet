@@ -356,3 +356,15 @@
 - **Limitación:** el escenario inicial es compatible con un problema de bloqueos, pero no se conservó el código SQLSTATE individual para certificar la causa exacta. Tampoco se simuló una confirmación OTP atravesando medianoche con el reloj de PostgreSQL.
 - **Regresión general:** pendiente de incorporar el resultado final.
 - **Revisión humana:** pruebas ejecutadas y cambios controlados manualmente por el desarrollador.
+
+## T-21 — Aplicación React y autenticación web
+
+- **Herramienta:** ChatGPT (GPT-6).
+- **Alcance:** RF-01, RF-02 y RNF-08.
+- **Implementación:** aplicación React, Vite, TypeScript, React Router y TanStack Query; registro, login, logout, rutas protegidas y recuperación de sesión.
+- **Seguridad:** access token en memoria, refresh mediante cookie HttpOnly, cliente API centralizado y validación con Zod.
+- **Verificaciones:** `npm run lint`, `npm run typecheck`, `npm run check:types` y `npm run build -w @treo/web` completados correctamente.
+- **Pruebas:** Vitest y Testing Library, 5 pruebas aprobadas, 0 fallidas.
+- **Compilación:** Vite 8.3.5, 168 módulos transformados.
+- **Validación manual con API real:** registrar resultado después de probar registro, login, recarga y logout en navegador.
+- **Revisión humana:** ejecución manual de verificaciones y revisión de cambios antes del commit.
