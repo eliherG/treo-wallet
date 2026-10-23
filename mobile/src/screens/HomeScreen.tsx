@@ -5,13 +5,14 @@ import { loadAccounts, type Account } from '../features/accounts/accounts';
 import { formatMxnCents, formatSignedMxnCents } from '../features/accounts/money';
 import { loadRecentMovements, movementDateInMexico, type Movement } from '../features/movements/movements';
 import { loadBeneficiaries, selectBeneficiary, type Beneficiary } from '../features/beneficiaries/beneficiaries';
+import { TransferScreen } from './TransferScreen';
 
 type LoadState<T> =
   | { kind: 'idle' | 'loading'; data: T }
   | { kind: 'success'; data: T }
   | { kind: 'error'; data: T; message: string };
 
-type Section = 'overview' | 'beneficiaries';
+type Section = 'overview' | 'beneficiaries' | 'transfer';
 
 function Retry({ label, onPress }: { label: string; onPress: () => void }) {
   return <Pressable accessibilityRole="button" onPress={onPress} style={styles.retry}>
@@ -111,7 +112,7 @@ export function HomeScreen() {
 
     <View style={styles.tabs} accessibilityRole="tablist">
       <Pressable accessibilityRole="tab" accessibilityState={{ selected: section === 'overview' }}
-        onPress={() => setSection('overview')}
+        onPress={() => { setSection('overview'); void fetchAccounts(); void fetchMovements(); }}
         style={[styles.tab, section === 'overview' && styles.tabActive]}>
         <Text style={[styles.tabText, section === 'overview' && styles.tabTextActive]}>Inicio</Text>
       </Pressable>
@@ -119,6 +120,11 @@ export function HomeScreen() {
         onPress={() => setSection('beneficiaries')}
         style={[styles.tab, section === 'beneficiaries' && styles.tabActive]}>
         <Text style={[styles.tabText, section === 'beneficiaries' && styles.tabTextActive]}>Beneficiarios</Text>
+      </Pressable>
+      <Pressable accessibilityRole="tab" accessibilityState={{ selected: section === 'transfer' }}
+        onPress={() => setSection('transfer')}
+        style={[styles.tab, section === 'transfer' && styles.tabActive]}>
+        <Text style={[styles.tabText, section === 'transfer' && styles.tabTextActive]}>Transferir</Text>
       </Pressable>
     </View>
 
@@ -159,7 +165,7 @@ export function HomeScreen() {
           <Text style={styles.meta}>Cuenta {accounts.data.find(a => a.id === item.accountId)?.clabeMasked ?? 'propia'}</Text>
         </View>))}
       <Text style={styles.footnote}>Los saldos provienen de la API. No se calculan a partir de los movimientos.</Text>
-    </> : <>
+    </> : section === 'beneficiaries' ? <>
       <View style={styles.sectionHeading}>
         <Text accessibilityRole="header" style={styles.sectionTitle}>Tus beneficiarios</Text>
         <Retry label="Actualizar" onPress={() => void fetchBeneficiaries()} />
@@ -184,11 +190,11 @@ export function HomeScreen() {
       {selected ? <View style={styles.selectedPanel}>
         <Text style={styles.selectedTitle}>Destinatario seleccionado: {selected.alias}</Text>
         <Text style={styles.meta}>{selected.isInternal
-          ? 'La transferencia móvil a beneficiarios internos se implementará en T-28.'
+          ? 'Utiliza la pestaña Transferir para enviar a este beneficiario interno.'
           : 'Beneficiario externo: las transferencias externas no están habilitadas en este MVP.'}</Text>
       </View> : null}
       <Text style={styles.footnote}>La selección se realiza sobre los datos propios devueltos por la API. La autorización se comprobará nuevamente en el servidor al transferir.</Text>
-    </>}
+    </> : <TransferScreen />}
   </ScrollView>;
 }
 
