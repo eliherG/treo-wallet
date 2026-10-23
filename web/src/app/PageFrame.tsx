@@ -17,7 +17,7 @@ export function PageFrame({ children }: { children: ReactNode }) {
     <aside className="side-nav" aria-label="Navegación principal">
       <div className="brand brand-light"><span className="brand-mark">T</span><span>TREO <small>WALLET</small></span></div>
       <span className="nav-caption">ESPACIO PERSONAL</span>
-      <nav aria-label="Secciones"><NavLink to="/dashboard">Resumen de cuentas</NavLink><NavLink to="/beneficiaries">Beneficiarios</NavLink></nav>
+      <nav aria-label="Secciones"><NavLink to="/dashboard">Resumen de cuentas</NavLink><NavLink to="/beneficiaries">Beneficiarios</NavLink><NavLink to="/transfer/new">Transferir</NavLink></nav>
       <div className="nav-bottom"><p>Cuenta segura</p><small>Operaciones en pesos mexicanos</small></div>
     </aside>
     <div className="main-layout">
