@@ -211,6 +211,29 @@ export class AtomicTransferService {
         concept: preflight.concept, reference: preflight.reference };
     const normalized = normalizeTransferIntent(resolved);
 
+    // Acquire row locks before INSERT to avoid FK KEY SHARE
+    // lock-upgrade deadlocks during concurrent transfers.
+    const senderRows = await manager.query(
+      'SELECT id FROM users WHERE id = $1 FOR UPDATE',
+      [actor],
+    ) as Array<{ id: string }>;
+
+    if (senderRows.length !== 1) {
+      throw new HttpProblem(
+        401, 'UNAUTHORIZED', 'No autorizado', 'Sesión inválida.',
+      );
+    }
+
+    if (!normalized.destinationAccountId) {
+      throw new Error('Transfer destination missing');
+    }
+
+    await lockAccounts(
+      manager,
+      normalized.sourceAccountId,
+      normalized.destinationAccountId,
+    );
+
     // The ON CONFLICT unique key serializes same-key inserts. This is part of
     // the SAME transaction as ledger and funds. T-14 stand-alone register()
     // must NOT be used from T-15.
