@@ -24,6 +24,9 @@ describe('T-21 autenticación web', () => {
   });
   it('inicia sesión WEB sin solicitar ni guardar refresh en JavaScript', async () => {
     const fetchMock = vi.fn(async (_url: unknown, init?: RequestInit) => {
+      // T-22 loads /accounts immediately after login; this request must have
+      // a successful mock, otherwise a simulated 401 logs the user out.
+      if (String(_url).endsWith('/accounts')) return json({ accounts: [] });
       const payload = init?.body ? JSON.parse(String(init.body)) as { client?: string } : {};
       if (payload.client === 'WEB' && String(_url).endsWith('/auth/login')) return json({
         accessToken: 'short.jwt', accessExpiresInSeconds: 900,
@@ -36,12 +39,17 @@ describe('T-21 autenticación web', () => {
     await userEvent.type(screen.getByLabelText(/correo electrónico/i), 'demo@treo.test');
     await userEvent.type(screen.getByLabelText('Contraseña'), 'password-123456');
     await userEvent.click(screen.getByRole('button', { name: /entrar a treo/i }));
-    expect(await screen.findByText(/tu sesión está activa/i)).toBeInTheDocument();
+    // T-22 replaced the temporary "Tu sesión está activa" placeholder.
+    expect(await screen.findByRole('heading', { name: /resumen de cuentas/i })).toBeInTheDocument();
+    expect(await screen.findByText(/todavía no tienes cuentas asociadas/i)).toBeInTheDocument();
     const login = fetchMock.mock.calls.find(([url]) => String(url).endsWith('/auth/login'));
     expect(login).toBeTruthy();
     expect((login?.[1] as RequestInit).credentials).toBe('include');
     expect(JSON.parse(String((login?.[1] as RequestInit).body))).toMatchObject({ client: 'WEB' });
     expect(await screen.findByText(/Usuaria Demo/)).toBeInTheDocument();
+    const accounts = fetchMock.mock.calls.find(([url]) => String(url).endsWith('/accounts'));
+    expect(accounts).toBeTruthy();
+    expect(new Headers((accounts?.[1] as RequestInit).headers).get('Authorization')).toBe('Bearer short.jwt');
   });
 
   it('registra un perfil WEB y muestra confirmación antes de login', async () => {
