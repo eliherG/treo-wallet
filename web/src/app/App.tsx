@@ -11,6 +11,7 @@ import { TransferNewPage } from '../features/transfers/TransferNewPage';
 import { TransferReviewPage } from '../features/transfers/TransferReviewPage';
 import { TransferOtpPage } from '../features/transfers/TransferOtpPage';
 import { TransferStatusPage } from '../features/transfers/TransferStatusPage';
+import { MovementsPage } from '../features/movements/MovementsPage';
 
 function Protected({ children }: { children: ReactNode }) {
   const { user, ready } = useSession();
@@ -26,6 +27,7 @@ function AuthenticatedRoutes() {
     <Route path="/register" element={<RegisterPage />} />
     <Route path="/dashboard" element={<Protected><AccountsPage /></Protected>} />
     <Route path="/beneficiaries" element={<Protected><BeneficiariesPage /></Protected>} />
+    <Route path="/movements" element={<Protected><MovementsPage /></Protected>} />
     <Route path="/transfer/new" element={<Protected><TransferNewPage /></Protected>} />
     <Route path="/transfer/review" element={<Protected><TransferReviewPage /></Protected>} />
     <Route path="/transfer/otp" element={<Protected><TransferOtpPage /></Protected>} />
