@@ -368,3 +368,15 @@
 - **Compilación:** Vite 8.3.5, 168 módulos transformados.
 - **Validación manual con API real:** registrar resultado después de probar registro, login, recarga y logout en navegador.
 - **Revisión humana:** ejecución manual de verificaciones y revisión de cambios antes del commit.
+
+## T-22 — Dashboard de cuentas y beneficiarios
+
+- **Herramienta:** ChatGPT (GPT-6).
+- **Cobertura:** RF-03, RF-04, RF-05 y RNF-08.
+- **Implementación:** dashboard de cuentas propias, visualización de saldos MXN, consulta y registro de beneficiarios, validación de CLABE y manejo de errores de API.
+- **Integración:** reutilización de la sesión autenticada y TanStack Query; actualización de datos tras operaciones exitosas.
+- **Corrección durante pruebas:** se actualizó el test de login de T-21 para contemplar la carga del dashboard introducida en T-22, incluyendo una respuesta simulada de cuentas y verificación del bearer token.
+- **Incidencia de integración:** se identificó un HTTP 403 en logout causado por la discrepancia entre `localhost:5173` y `127.0.0.1:5173`. Se corrigió alineando la variable `WEB_ORIGIN`, sin deshabilitar la validación de origen.
+- **Pruebas automatizadas:** 11 aprobadas, 0 fallidas, distribuidas en 5 archivos.
+- **Verificaciones:** ESLint, TypeScript y `git diff --check` correctos.
+- **Pendiente para cierre:** documentar resultado de OpenAPI, build de producción y validación manual de cuentas y beneficiarios.
