@@ -659,3 +659,64 @@ T-29 completado y validado. Se incorporó cobertura automatizada adicional para 
 Las tareas T-26 a T-29 proporcionan la implementación funcional y la evidencia de pruebas necesarias para cerrar el Bloque 4 — Clientes web y móvil.
 
 **Hito G3:** validación funcional completada; integración definitiva pendiente de confirmar mediante commit y merge a `main`.
+
+## T-30 — Propuesta de arquitectura y despliegue en AWS
+
+**Fecha:** 23 de octubre de 2026
+
+**Herramienta de IA:** ChatGPT (GPT-6)
+
+**Cobertura:** RNF-11, RF-14
+
+**Estado:** Documento técnico elaborado, revisado y aprobado.
+
+### Objetivo
+
+Diseñar y documentar una arquitectura de despliegue para Treo Wallet en AWS, considerando disponibilidad, integridad financiera, seguridad, observabilidad, escalabilidad, recuperación ante desastres y costos, sin aprovisionar infraestructura real.
+
+### Propuesta arquitectónica
+
+- **Backend:** implementación del monolito modular Node.js/Express en Amazon ECS Fargate, detrás de Application Load Balancer y AWS WAF.
+- **Base de datos:** Amazon RDS PostgreSQL Multi-AZ, con respaldos automatizados, recuperación a un punto en el tiempo y acceso restringido mediante red privada.
+- **Aplicación web:** distribución de los archivos estáticos de React/Vite mediante Amazon S3 privado y CloudFront con Origin Access Control.
+- **Aplicación móvil:** distribución de compilaciones firmadas para iOS y Android, utilizando HTTPS para el consumo de la API.
+- **Seguridad:** aislamiento de redes, IAM de privilegio mínimo, gestión centralizada de secretos, cifrado y controles para los componentes financieros.
+- **Observabilidad:** métricas, logs, alertas, trazabilidad y separación entre auditoría de negocio y eventos de infraestructura.
+- **CI/CD:** propuesta de GitHub Actions con autenticación OIDC y separación de ambientes `dev`, `staging` y `prod`.
+- **Escalabilidad:** estrategia de crecimiento gradual, control de conexiones PostgreSQL, evaluación de RDS Proxy y escalamiento horizontal del backend.
+- **Infraestructura como código:** selección de Terraform para una futura implementación reproducible.
+
+### Evaluación de alternativas
+
+Se analizaron Amazon App Runner, EKS, Lambda/API Gateway y Aurora PostgreSQL.
+
+Se seleccionó ECS Fargate con RDS PostgreSQL como propuesta inicial para mantener la arquitectura modular existente, reducir complejidad operativa innecesaria y conservar las garantías transaccionales del sistema.
+
+Se documentaron los criterios bajo los cuales otras alternativas podrían evaluarse posteriormente, considerando crecimiento, necesidades operativas y resultados de pruebas de rendimiento.
+
+### Uso de inteligencia artificial
+
+La IA se utilizó para analizar los requisitos originales, contrastar alternativas de infraestructura, estructurar las decisiones técnicas, identificar riesgos y elaborar el documento de arquitectura.
+
+La revisión humana comprendió el análisis de la propuesta, su coherencia con el sistema implementado y la aprobación de las decisiones arquitectónicas.
+
+### Evidencia y validación
+
+- Documento generado: `docs/aws-deploy.md`.
+- Diagrama de arquitectura definido mediante Mermaid.
+- Justificación de servicios, alternativas y decisiones tecnológicas.
+- Estrategias documentadas de seguridad, disponibilidad, respaldos, recuperación, observabilidad y crecimiento.
+- Propuesta revisada y aprobada conceptualmente.
+- No se realizaron despliegues, pruebas de carga ni simulacros de recuperación en AWS.
+
+### Limitaciones
+
+Los objetivos RPO/RTO, políticas de retención y estrategias de recuperación constituyen propuestas sujetas a validación posterior, no garantías operativas demostradas.
+
+El documento no constituye una certificación de cumplimiento regulatorio ni acredita una infraestructura productiva implementada.
+
+### Resultado
+
+T-30 completado a nivel documental. Se estableció una propuesta de despliegue AWS alineada con el monolito modular, la integridad financiera de PostgreSQL y los clientes web y móvil existentes.
+
+La implementación de integración continua corresponde a T-31 y la preparación de la entrega final a T-32.
