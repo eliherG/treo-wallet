@@ -38,13 +38,13 @@
 
 | Campo | Valor a comprobar (no inventar) |
 |---|---|
-| Archivo o enlace del video | PENDIENTE |
+| Archivo del video | PENDIENTE |
 | Duración comprobada | PENDIENTE — requisito **<= 05:00** |
 | Fecha de grabación | PENDIENTE |
 | Web visible con saldo insuficiente | PENDIENTE |
 | Flujo móvil visible | PENDIENTE |
 | Sin datos/secretos reales | PENDIENTE |
-| Enlace accesible a evaluadores | PENDIENTE |
+| Video adjunto al correo | PENDIENTE |
 
 ## Para la defensa técnica de 60 minutos
 

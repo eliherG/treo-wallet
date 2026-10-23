@@ -13,7 +13,7 @@
 | README reproducible desde **clon limpio** | PENDIENTE | Seguir secciones 2–5 del README en otra carpeta sin copiar `node_modules` ni `.env`; aportar salida real. |
 | Web con datos demo; saldo insuficiente | PENDIENTE | Confirmación manual sin alterar BD ni falsificar estado. |
 | Expo Go/iOS y API local; móvil funcional | PENDIENTE | Verificar en simulador o iPhone y registrar dispositivo. |
-| **Video real de duración <= 05:00** web+móvil+saldo insuficiente | PENDIENTE | Grabar, medir duración, revisar privacidad y adjuntar enlace externo. |
+| **Video real de duración <= 05:00** web+móvil+saldo insuficiente | PENDIENTE | Grabar, medir duración, revisar privacidad y adjuntar el archivo al correo de entrega. |
 | CI tres jobs **verdes en `main`** | REPORTADO POR DESARROLLADOR, ENLACE PENDIENTE | Registrar run URL, SHA de `main` y tres trabajos `success`. |
 | Bitácora de IA y trazabilidad RF → tarea → prueba → commit | PENDIENTE AUDITAR | Revisar fallos y correcciones, no solo nombres de tareas. |
 | Entrega por correo con enlaces y acceso | PENDIENTE | Comprobar destinatario con reclutador; no inventar correo. |
@@ -55,7 +55,7 @@ git status --short
 | Resultado 17 suites API | PENDIENTE |
 | Resultado pruebas web y build | PENDIENTE |
 | Resultado pruebas móviles y Expo | PENDIENTE |
-| URL/archivo del video | PENDIENTE |
+| Archivo del video adjunto al correo | PENDIENTE |
 | Duración medida | PENDIENTE |
 | Matriz manual y saldo insuficiente | PENDIENTE |
 | Incidencias abiertas / decisión | PENDIENTE |
