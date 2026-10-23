@@ -586,3 +586,76 @@ Las vulnerabilidades de dependencias identificadas previamente mediante npm cont
 T-28 implementado y validado. La aplicación móvil permite realizar transferencias autenticadas, gestionar confirmaciones OTP y recuperar operaciones inciertas utilizando el motor financiero existente, sin modificaciones en PostgreSQL ni en la API.
 
 El entregable queda preparado para su integración en la rama principal.
+
+## T-29 — Pruebas de seguridad y flujos móviles
+
+**Fecha:** 23 de octubre de 2026
+
+**Herramienta:** ChatGPT (GPT-6)
+
+**Cobertura:** RF-02, RF-03, RF-06, RF-10, RF-12, RF-13 y RNF-09
+
+**Estado:** Implementación y validación completadas.
+
+### Objetivo
+
+Completar la cobertura automatizada y manual de los flujos financieros móviles implementados durante T-26, T-27 y T-28, verificando autenticación, almacenamiento seguro de tokens, confirmación OTP, manejo de rechazos, recuperación ante fallos de red, idempotencia y privacidad de la interfaz.
+
+### Implementación
+
+- Incorporación de seis pruebas adicionales de lógica y seguridad.
+- Integración de Jest, `jest-expo` y React Native Testing Library para pruebas de componentes.
+- Incorporación de nueve pruebas de interfaz React Native.
+- Separación del componente `AppPrivacyCover` para verificar su comportamiento mediante eventos `AppState`.
+- Validación del aislamiento de intenciones financieras entre usuarios.
+- Comprobación del manejo de sesiones revocadas y credenciales inválidas.
+- Verificación de que un OTP rechazado no genere un comprobante exitoso.
+- Validación de recuperación ante errores de red sin duplicar solicitudes financieras.
+- Incorporación de una matriz manual de doce escenarios en `docs/t29-mobile-manual.md`.
+- Conservación de las suites existentes de `node:test`, separadas de las nuevas pruebas Jest.
+
+### Incidencias y resolución
+
+Durante la primera ejecución de las pruebas visuales se identificaron dos fallos en las expectativas de prueba:
+
+1. La validación del botón de revisión de transferencias consultaba `accessibilityState.disabled` desde un elemento incorrecto. Se corrigió utilizando el rol accesible del botón.
+2. La prueba de privacidad asumía un estado inicial `active`, mientras que el entorno Jest podía iniciar con `AppState.currentState` desconocido. Se estableció explícitamente el estado inicial para garantizar una ejecución determinista.
+
+Ambas correcciones se realizaron en los archivos de prueba, sin modificar la lógica financiera ni las reglas de seguridad implementadas.
+
+### Uso de inteligencia artificial
+
+Se utilizó IA para analizar los módulos existentes, identificar escenarios críticos, diseñar pruebas automatizadas, configurar la infraestructura Jest y diagnosticar fallos de integración.
+
+Las propuestas fueron verificadas mediante ejecución local. La revisión humana incluyó pruebas de regresión, comprobaciones estáticas y validación funcional en el simulador iPhone 17.
+
+### Validaciones y resultados
+
+- **Pruebas móviles de lógica:** 41/41 aprobadas.
+- **Pruebas visuales React Native:** 9/9 aprobadas.
+- **Total de pruebas móviles:** 50/50 aprobadas.
+- **Regresión web:** reportada satisfactoria, sin regresiones.
+- **ESLint:** sin errores ni advertencias.
+- **TypeScript:** comprobación correcta en todos los workspaces.
+- **OpenAPI:** contratos verificados correctamente.
+- **Compilación web:** reportada satisfactoria.
+- **Expo Doctor y compatibilidad:** verificaciones reportadas satisfactorias.
+- **Validación manual:** funcionamiento reportado correcto en el simulador iPhone 17.
+
+### Consideraciones de seguridad y limitaciones
+
+Las pruebas automatizadas verifican la conservación de llaves idempotentes, el aislamiento de usuarios, la protección de credenciales y la recuperación de operaciones inciertas.
+
+La pérdida de respuesta después de una operación financiera confirmada se comprobó mediante simulación automatizada; no se declara reproducida físicamente sin evidencia específica.
+
+La cobertura de privacidad mediante `AppState` es una mitigación visual. No constituye una garantía de bloqueo de capturas ni snapshots nativos de iOS.
+
+Las vulnerabilidades previamente reportadas por npm requieren una revisión independiente antes de considerar el sistema apto para producción.
+
+### Resultado
+
+T-29 completado y validado. Se incorporó cobertura automatizada adicional para los principales riesgos de autenticación, transferencia y privacidad móvil.
+
+Las tareas T-26 a T-29 proporcionan la implementación funcional y la evidencia de pruebas necesarias para cerrar el Bloque 4 — Clientes web y móvil.
+
+**Hito G3:** validación funcional completada; integración definitiva pendiente de confirmar mediante commit y merge a `main`.
