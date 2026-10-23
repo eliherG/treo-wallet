@@ -380,3 +380,30 @@
 - **Pruebas automatizadas:** 11 aprobadas, 0 fallidas, distribuidas en 5 archivos.
 - **Verificaciones:** ESLint, TypeScript y `git diff --check` correctos.
 - **Pendiente para cierre:** documentar resultado de OpenAPI, build de producción y validación manual de cuentas y beneficiarios.
+
+## T-23 — Transferencias web: revisión, confirmación OTP y comprobante
+
+- **Herramienta:** ChatGPT (GPT-6).
+- **Cobertura:** RF-06/07/08/09/10/12/13 y RNF-08.
+- **Fuentes:** contratos OpenAPI y código del backend T-15/16/17; frontend base T-21/T-22. Sin cambios al backend ni a migraciones.
+- **Implementación:** rutas autenticadas para captura, revisión, OTP y estado; formulario de cuentas propias y beneficiario interno; importe decimal exacto, concepto y referencia con ceros iniciales; manejo de errores Problem Details.
+- **Idempotencia:** UUID único por intención creada en el formulario; bloqueo inmediato de doble clic y conservación de la llave durante reintentos tras resultado incierto.
+- **Integridad de UI:** comprobante únicamente para estado `COMPLETED` reportado por backend; `PENDING_CONFIRMATION`, `PROCESSING` y `REJECTED` sin comprobante; saldos invalidados tras éxito, sin cálculo optimista.
+- **Privacidad y sesión:** la intención no se persiste en almacenamiento local y se descarta al cambiar de identidad; los tokens permanecen administrados por T-21.
+- **Pruebas preparadas:** cuatro casos unitarios para dinero/validación y ocho de componentes para doble clic, errores, recuperación, beneficiarios y OTP. Las pruebas y verificaciones de esta entrada deben completarse con resultados reales antes del commit.
+- **Validación de sintaxis:** transpilación TS/TSX satisfactoria. **Pendiente:** lint, typecheck, check:types, Vite build, Vitest, recorrido manual con API real y confirmación Git.
+- **Limitaciones:** entorno OTP local de demostración, no segundo factor productivo. Ante una intención sin ID y respuesta de red incierta, solo puede recuperarse mediante replay de la misma llave; el backend no expone consulta por llave.
+
+## T-24 — Historial web, filtros y paginación por cursor
+
+- **Herramienta:** ChatGPT (GPT-6).
+- **Cobertura:** RF-11, CA-RF11-01…06, RNF-08.
+- **Implementación:** ruta protegida `/movements`; consulta autenticada `GET /api/v1/movements` con filtros `accountId`, `type`, `from`, `to` y paginación por `nextCursor`, `limit=20`; acceso al detalle de transferencia desde cada movimiento.
+- **Integridad:** cursor proporcionado por el servidor sin manipular; los cambios de filtro reinician la paginación; se impide aplicar rangos de fechas invertidos o inválidos. Las fechas se presentan en `America/Mexico_City`.
+- **Precisión:** importe firmado mostrado desde centavos enteros usando `BigInt`, sin float en operaciones monetarias.
+- **Estados de interfaz:** carga, lista vacía, error recuperable, página anterior y siguiente; filtros y navegación por teclado.
+- **Seguridad:** consulta ligada a la sesión autenticada; cuentas y CLABEs solo enmascaradas; el backend mantiene el control de propiedad y el cursor HMAC.
+- **Pruebas automatizadas previstas:** 11 pruebas nuevas aprobadas; regresión web completa de 34/34.
+- **Validación manual de navegador y API:** Build Vite 8.3.5 exitoso, 180 módulos transformados.
+- **Verificaciones de lint, TypeScript, OpenAPI y build:** ESLint, TypeScript y OpenAPI correctos.
+- **Revisión humana:** Validación manual: registra únicamente los escenarios que efectivamente comprobe.
