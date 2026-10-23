@@ -1,0 +1,21 @@
+{
+  "expo": {
+    "name": "Treo Wallet",
+    "slug": "treo-wallet-mobile",
+    "scheme": "treowallet",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.treo.wallet.demo"
+    },
+    "android": {
+      "package": "com.treo.wallet.demo"
+    },
+    "plugins": [
+      "expo-status-bar",
+      "expo-secure-store"
+    ]
+  }
+}
