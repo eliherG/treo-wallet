@@ -31,7 +31,7 @@ jobs:
       JWT_ACCESS_SECRET: ci-only-jwt-access-secret-not-for-production-2026
       TREO_DEMO_OTP: '135790'
       TREO_OTP_HMAC_SECRET: ci-only-otp-hmac-secret-not-for-production-2026
-      WEB_ORIGIN: http://127.0.0.1:5173
+      WEB_ORIGIN: http://localhost:5173
     services:
       postgres:
         image: postgres:16
