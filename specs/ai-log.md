@@ -419,3 +419,61 @@
 - **Resultados:** 9 pruebas nuevas aprobadas; regresión completa de 43 pruebas aprobadas en 10 archivos, sin fallos.
 - **Verificaciones:** ESLint, TypeScript, OpenAPI y build Vite 8.3.5 satisfactorios; 180 módulos transformados.
 - **Revisión humana:** pruebas y verificaciones ejecutadas manualmente antes de integrar los cambios.
+
+## T-26 — Configuración de Expo y autenticación móvil segura
+
+**Fecha:** 23 de octubre de 2026  
+**Herramienta de IA:** ChatGPT (GPT-6)  
+**Cobertura:** RF-02, RNF-09  
+**Estado:** Implementación y verificaciones automatizadas completadas.
+
+### Objetivo
+
+Incorporar una aplicación móvil con Expo, React Native y TypeScript al monorepositorio existente, reutilizando la API de autenticación y estableciendo un mecanismo de almacenamiento seguro de credenciales.
+
+### Implementación
+
+- Se configuró Expo SDK 57 dentro del workspace `@treo/mobile`, conservando la estructura del monorepositorio.
+- Se incorporó navegación nativa entre las pantallas de autenticación y la pantalla principal.
+- Se implementó un cliente HTTP para consumir los endpoints existentes de autenticación.
+- Se integraron las operaciones de inicio de sesión, renovación de sesión y cierre de sesión mediante el cliente `MOBILE`.
+- Se utilizó `expo-secure-store` para almacenar el refresh token; el access token permanece exclusivamente en memoria.
+- Se implementó la renovación rotativa del refresh token, la recuperación de sesión, el manejo de credenciales revocadas y el tratamiento de errores de red.
+- Se incorporaron pruebas automatizadas para los principales escenarios del controlador de autenticación.
+
+### Incidencias y resolución
+
+**Configuración del simulador iOS:** se utilizó Xcode y el simulador iPhone 17 para ejecutar la aplicación. Durante la configuración inicial se presentó un error de tiempo de espera al intentar abrir Expo en otro simulador. Posteriormente, la aplicación pudo ejecutarse correctamente en iPhone 17.
+
+**Duplicación de dependencias:** Expo Doctor identificó versiones duplicadas de React (19.2.3 y 19.3.1) y React Native (0.86.3 y 0.88.0) debido a la resolución de dependencias del monorepositorio.
+
+Se corrigió la configuración de dependencias, unificando React 19.2.3 y React Native 0.86.3, ajustando las declaraciones de los workspaces y utilizando una configuración de `overrides` en el paquete raíz. Tras reinstalar y deduplicar dependencias, Expo Doctor aprobó sus 21 verificaciones.
+
+### Validación y resultados
+
+- **Aplicación móvil:** ejecución funcional en el simulador iPhone 17.
+- **Pruebas manuales:** inicio y cierre de sesión correctos contra la API existente.
+- **Pruebas móviles:** 7/7 aprobadas.
+- **Pruebas web de regresión:** 43/43 aprobadas.
+- **Expo Doctor:** 21/21 verificaciones aprobadas.
+- **Expo Install Check:** dependencias compatibles con SDK 57.
+- **ESLint:** aprobado sin advertencias.
+- **TypeScript:** verificación satisfactoria en todos los workspaces.
+- **Contratos OpenAPI:** generación y comprobación de tipos correctas.
+- **Compilación web:** Vite ejecutado correctamente, con 180 módulos transformados.
+
+### Uso y revisión de IA
+
+La IA se utilizó para estructurar la implementación móvil, definir los flujos de autenticación, proponer pruebas y diagnosticar problemas de dependencias. Las propuestas se contrastaron mediante comandos ejecutados localmente y resultados verificables.
+
+La revisión humana incluyó la ejecución de pruebas automatizadas, verificación de tipos, análisis de dependencias y validación funcional en el simulador iOS.
+
+### Observaciones y pendientes
+
+- La recuperación automática de sesión tras reiniciar completamente la aplicación cuenta con prueba automatizada; su verificación manual independiente no se ha documentado.
+- La ejecución se realizó en un entorno local de desarrollo mediante Expo Go; no se generó una compilación de distribución.
+- El análisis de npm reportó seis vulnerabilidades en dependencias (dos moderadas y cuatro altas), pendientes de evaluación.
+- Se observaron advertencias sobre scripts de instalación bloqueados por npm, pendientes de revisión.
+- Queda pendiente el cierre del entregable mediante commit y merge a la rama principal.
+
+**Resultado:** autenticación móvil funcional, dependencias compatibles con Expo SDK 57 y pruebas automatizadas aprobadas, sin regresiones detectadas en el cliente web.
