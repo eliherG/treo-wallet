@@ -41,5 +41,10 @@
   },
   "overrides": {
     "react-native": "0.86.3"
+  },
+  "allowScripts": {
+    "argon2": true,
+    "esbuild": true,
+    "@scarf/scarf": false
   }
 }
